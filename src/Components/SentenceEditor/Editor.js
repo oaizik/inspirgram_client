@@ -1,5 +1,8 @@
 import React, { useState } from 'react';
-import {TextField, Tab, Tabs, Paper, Button, Typography, makeStyles, Container, Dialog, DialogActions, DialogContent, DialogTitle, InputLabel, Input, MenuItem, FormControl, Select } from '@material-ui/core';
+import {Snackbar, TextField, Tab, Tabs, Paper, Button, Typography, makeStyles, Container, Dialog, DialogActions, DialogContent, DialogTitle, InputLabel, Input, MenuItem, FormControl, Select } from '@material-ui/core';
+import AddShoppingCartIcon from '@material-ui/icons/AddShoppingCart';
+import CloudUploadIcon from '@material-ui/icons/CloudUpload';
+import MuiAlert from '@material-ui/lab/Alert';
 
 const useStyles = makeStyles(theme => ({
     heroContent: {
@@ -29,17 +32,16 @@ const useStyles = makeStyles(theme => ({
         marginTop: '4vh',
     },
     colorGroup: {
+        marginTop: '4vh',
         fontFamily: "'Lato', sans-serif",
         textAlign: 'center',
-        display: 'flex',
-        flexDirection: 'column',
         overflow: 'scroll',
-        height: '60vh',
+        height: '56vh',
     },
-    colorDiv: {
-        width: '90%',
-        margin: '2px auto',
-        border: '1px solid',
+    colors: {
+        textTransform: 'initial',
+        margin: '2px',
+        // border: '1px solid',
         textAlign: 'center',
     },
     button: {
@@ -77,10 +79,48 @@ const useStyles = makeStyles(theme => ({
             margin: '20% auto',
         },
     },
+    finish: {
+        width: '80%',
+        margin: '0px auto',
+        // border: '1px solid',
+        height: '10vh',
+        display: 'flex',
+        flexDirection: 'row',
+        [theme.breakpoints.down(700)]: {
+            flexDirection: 'column',
+            width: '90%',
+            alignItems: 'center',
+        },
+    },
+    finishButton: {
+        textTransform: 'initial',
+        margin: '10px 10px 10px 10px',
+        width: '100%',
+        background: 'linear-gradient(45deg, #2196F3 30%, #21CBF3 90%)',
+        boxShadow: '0 3px 5px 2px rgba(33, 203, 243, .3)',
+    },
 }));
+
+function Alert(props) {
+    return <MuiAlert elevation={6} variant="filled" {...props} />;
+}
 
 export default function Catalog() {
     const classes = useStyles();
+    const saveSentenveClicked = async () => {
+        //  if user is not logged in
+            handleAlertClick();
+        //  else
+        //  await need to save the sentence to the db
+        //  return success or failed to the user
+    };
+    const buySentenveClicked = async () => {
+        //  if user is not logged in
+        handleAlertClick();
+        //  else
+        //  await need to save the order to the db
+        //  move to payPal payment
+    };
     //  sentence state, thats the sentence style we need to get from the db
     const [sentenceStyle, setSentenceStyle] = useState({
         color: 'black',
@@ -109,7 +149,19 @@ export default function Catalog() {
     const [openTextAlign, setOpenTextAlign] = useState(false);
     const [openAlignItems, setOpenAlignItems] = useState(false);
     const [openFontFamily, setOpenFontFamily] = useState(false);
-    
+    const [tabValue, setTebValue] = useState(0);
+    const [alertOpen, setAlertOpen] = React.useState(false);
+
+    const handleAlertClick = () => {
+        setAlertOpen(true);
+    };
+
+    const handleAlertClose = (event, reason) => {
+        if (reason === 'clickaway') {
+        return;
+        }
+        setAlertOpen(false);
+    }; 
     const ChangeTextSize = async e => {
         await setSentenceStyle({...sentenceStyle, fontSize: `${e}px`, lineHeight: `${e+10}px`});
         console.log(`sentence style font size: ${sentenceStyle.fontSize}`);
@@ -160,13 +212,14 @@ export default function Catalog() {
         }
         console.log(`sentence style text-decoration: ${sentenceStyle.textDecoration}`);
     };
-    const changeTextColor = c => {
-        setSentenceStyle({...sentenceStyle, color: c});
-        console.log(`sentence color: ${c}`);
-    };
-    const changeBackgroundColor = c => {
-        setSentenceStyle({...sentenceStyle, backgroundColor: c});
-        console.log(`sentence color: ${c}`);
+    const changeColor = c => {
+        if(tabValue === 1) {
+            setSentenceStyle({...sentenceStyle, color: c});
+        } else {
+            setSentenceStyle({...sentenceStyle, backgroundColor: c});
+        }
+        console.log(`tab value: ${tabValue}`);
+        console.log(`color: ${c}`);
     };
     const changeSentenceBody = e => {
         setSentenceStyle({...sentenceStyle, sentenceBody: e});
@@ -198,82 +251,112 @@ export default function Catalog() {
         </div>
     );
     const colorGroup = (
-        //  need to add all the colors from table, and arrange according to primary color and gradiant
+        //  maybe add gradiant
         <div className={classes.colorGroup}>
             <div>Red Colors:</div>
-            <div style={{backgroundColor: 'lightsalmon'}} className={classes.colorDiv} onClick={e=> changeTextColor('lightsalmon')}>lightsalmon</div>
-            <div style={{backgroundColor: 'salmon'}} className={classes.colorDiv} onClick={e=> changeTextColor('salmon')}>salmon</div>
-            <div style={{backgroundColor: 'lightcoral'}} className={classes.colorDiv} onClick={e=> changeTextColor('lightcoral')}>lightcoral</div>
-            <div style={{backgroundColor: 'indianred'}} className={classes.colorDiv} onClick={e=> changeTextColor('indianred')}>indianred</div>
-            <div style={{backgroundColor: 'crimson'}} className={classes.colorDiv} onClick={e=> changeTextColor('crimson')}>crimson</div>
-            <div style={{backgroundColor: 'firebrick'}} className={classes.colorDiv} onClick={e=> changeTextColor('firebrick')}>firebrick</div>
-            <div style={{backgroundColor: 'red'}} className={classes.colorDiv} onClick={e=> changeTextColor('red')}>red</div>
-            <div style={{backgroundColor: 'darkred'}} className={classes.colorDiv} onClick={e=> changeTextColor('darkred')}>darkred</div>
-            <div style={{backgroundColor: 'orangered'}} className={classes.colorDiv} onClick={e=> changeTextColor('orangered')}>orangered</div>
-            <div style={{backgroundColor: 'gold'}} className={classes.colorDiv} onClick={e=> changeTextColor('gold')}>gold</div>
-            <div style={{backgroundColor: 'darkorange'}} className={classes.colorDiv} onClick={e=> changeTextColor('darkorange')}>darkorange</div> 
-            <div style={{backgroundColor: 'lemonchiffon'}} className={classes.colorDiv} onClick={e=> changeTextColor('lemonchiffon')}>lemonchiffon</div>           
-            <div style={{backgroundColor: 'lightgoldenrodyellow'}} className={classes.colorDiv} onClick={e=> changeTextColor('lightgoldenrodyellow')}>lightgoldenrodyellow</div>
-            <div style={{backgroundColor: 'moccasin'}} className={classes.colorDiv} onClick={e=> changeTextColor('moccasin')}>moccasin</div>
-            <div style={{backgroundColor: 'peachpuff'}} className={classes.colorDiv} onClick={e=> changeTextColor('peachpuff')}>peachpuff</div>
-            <div style={{backgroundColor: 'palegoldenrod'}} className={classes.colorDiv} onClick={e=> changeTextColor('palegoldenrod')}>green</div>
-            <div style={{backgroundColor: 'khaki'}} className={classes.colorDiv} onClick={e=> changeTextColor('khaki')}>khaki</div>
-            <div style={{backgroundColor: 'yellow'}} className={classes.colorDiv} onClick={e=> changeTextColor('yellow')}>yellow</div>
-            <div style={{backgroundColor: 'lawngreen'}} className={classes.colorDiv} onClick={e=> changeTextColor('lawngreen')}>lawngreen</div>
-            <div style={{backgroundColor: 'limegreen'}} className={classes.colorDiv} onClick={e=> changeTextColor('limegreen')}>limegreen</div>
-            <div style={{backgroundColor: 'lime'}} className={classes.colorDiv} onClick={e=> changeTextColor('lime')}>lime</div>
-            <div style={{backgroundColor: 'green'}} className={classes.colorDiv} onClick={e=> changeTextColor('green')}>green</div>
-            <div style={{backgroundColor: 'darkgreen'}} className={classes.colorDiv} onClick={e=> changeTextColor('darkgreen')}>darkgreen</div>
-            <div style={{backgroundColor: 'yellowgreen'}} className={classes.colorDiv} onClick={e=> changeTextColor('yellowgreen')}>yellowgreen</div>
-            <div style={{backgroundColor: 'white'}} className={classes.colorDiv} onClick={e=> changeTextColor('white')}>white</div>
-            <div style={{backgroundColor: 'black'}} className={classes.colorDiv} onClick={e=> changeTextColor('black')}>black</div>
-            <div style={{backgroundColor: 'gray'}} className={classes.colorDiv} onClick={e=> changeTextColor('gray')}>gray</div>
-        </div>
-    );
-    const backgroundColorGroup = (
-        //  need to add all the colors from table, and arrange according to primary color
-        <div className={classes.colorGroup}>
-            <div style={{backgroundColor: 'lightsalmon'}} className={classes.colorDiv} onClick={e=> changeBackgroundColor('lightsalmon')}>lightsalmon</div>
-            <div style={{backgroundColor: 'salmon'}} className={classes.colorDiv} onClick={e=> changeBackgroundColor('salmon')}>salmon</div>
-            <div style={{backgroundColor: 'lightcoral'}} className={classes.colorDiv} onClick={e=> changeBackgroundColor('lightcoral')}>lightcoral</div>
-            <div style={{backgroundColor: 'indianred'}} className={classes.colorDiv} onClick={e=> changeBackgroundColor('indianred')}>indianred</div>
-            <div style={{backgroundColor: 'crimson'}} className={classes.colorDiv} onClick={e=> changeBackgroundColor('crimson')}>crimson</div>
-            <div style={{backgroundColor: 'firebrick'}} className={classes.colorDiv} onClick={e=> changeBackgroundColor('firebrick')}>firebrick</div>
-            <div style={{backgroundColor: 'red'}} className={classes.colorDiv} onClick={e=> changeBackgroundColor('red')}>red</div>
-            <div style={{backgroundColor: 'darkred'}} className={classes.colorDiv} onClick={e=> changeBackgroundColor('darkred')}>darkred</div>
-            <div style={{backgroundColor: 'orangered'}} className={classes.colorDiv} onClick={e=> changeBackgroundColor('orangered')}>orangered</div>
-            <div style={{backgroundColor: 'gold'}} className={classes.colorDiv} onClick={e=> changeBackgroundColor('gold')}>gold</div>
-            <div style={{backgroundColor: 'darkorange'}} className={classes.colorDiv} onClick={e=> changeBackgroundColor('darkorange')}>darkorange</div> 
-            <div style={{backgroundColor: 'lemonchiffon'}} className={classes.colorDiv} onClick={e=> changeBackgroundColor('lemonchiffon')}>lemonchiffon</div>           
-            <div style={{backgroundColor: 'lightgoldenrodyellow'}} className={classes.colorDiv} onClick={e=> changeBackgroundColor('lightgoldenrodyellow')}>lightgoldenrodyellow</div>
-            <div style={{backgroundColor: 'moccasin'}} className={classes.colorDiv} onClick={e=> changeBackgroundColor('moccasin')}>moccasin</div>
-            <div style={{backgroundColor: 'peachpuff'}} className={classes.colorDiv} onClick={e=> changeBackgroundColor('peachpuff')}>peachpuff</div>
-            <div style={{backgroundColor: 'palegoldenrod'}} className={classes.colorDiv} onClick={e=> changeBackgroundColor('palegoldenrod')}>green</div>
-            <div style={{backgroundColor: 'khaki'}} className={classes.colorDiv} onClick={e=> changeBackgroundColor('khaki')}>khaki</div>
-            <div style={{backgroundColor: 'yellow'}} className={classes.colorDiv} onClick={e=> changeBackgroundColor('yellow')}>yellow</div>
-            <div style={{backgroundColor: 'lawngreen'}} className={classes.colorDiv} onClick={e=> changeBackgroundColor('lawngreen')}>lawngreen</div>
-            <div style={{backgroundColor: 'limegreen'}} className={classes.colorDiv} onClick={e=> changeBackgroundColor('limegreen')}>limegreen</div>
-            <div style={{backgroundColor: 'lime'}} className={classes.colorDiv} onClick={e=> changeBackgroundColor('lime')}>lime</div>
-            <div style={{backgroundColor: 'green'}} className={classes.colorDiv} onClick={e=> changeBackgroundColor('green')}>green</div>
-            <div style={{backgroundColor: 'darkgreen'}} className={classes.colorDiv} onClick={e=> changeBackgroundColor('darkgreen')}>darkgreen</div>
-            <div style={{backgroundColor: 'yellowgreen'}} className={classes.colorDiv} onClick={e=> changeBackgroundColor('yellowgreen')}>yellowgreen</div>
-            <div style={{backgroundColor: 'white'}} className={classes.colorDiv} onClick={e=> changeBackgroundColor('white')}>white</div>
-            <div style={{backgroundColor: 'black'}} className={classes.colorDiv} onClick={e=> changeBackgroundColor('black')}>black</div>
-            <div style={{backgroundColor: 'gray'}} className={classes.colorDiv} onClick={e=> changeBackgroundColor('gray')}>gray</div>
+            <Button className={classes.colors} variant="contained" style={{backgroundColor: 'lightsalmon'}} onClick={e=> changeColor('lightsalmon')}>lightsalmon</Button>
+            <Button className={classes.colors} variant="contained" style={{backgroundColor: 'salmon'}} onClick={e=> changeColor('salmon')}>salmon</Button>
+            <Button className={classes.colors} variant="contained" style={{backgroundColor: 'darksalmon'}} onClick={e=> changeColor('darksalmon')}>darksalmon</Button>
+            <Button className={classes.colors} variant="contained" style={{backgroundColor: 'indianred'}} onClick={e=> changeColor('indianred')}>indianred</Button>
+            <Button className={classes.colors} variant="contained" style={{backgroundColor: 'crimson'}} onClick={e=> changeColor('crimson')}>crimson</Button>
+            <Button className={classes.colors} variant="contained" style={{backgroundColor: 'firebrick'}} onClick={e=> changeColor('firebrick')}>firebrick</Button>
+            <Button className={classes.colors} variant="contained" style={{backgroundColor: 'red'}} onClick={e=> changeColor('red')}>red</Button>
+            <Button className={classes.colors} variant="contained" style={{backgroundColor: 'darkred', color: 'white'}} onClick={e=> changeColor('darkred')}>darkred</Button>
+            <div>Orange Colors:</div>
+            <Button className={classes.colors} variant="contained" style={{backgroundColor: 'coral'}} onClick={e=> changeColor('coral')}>coral</Button>
+            <Button className={classes.colors} variant="contained" style={{backgroundColor: 'orangered'}} onClick={e=> changeColor('orangered')}>orangered</Button>
+            <Button className={classes.colors} variant="contained" style={{backgroundColor: 'gold'}} onClick={e=> changeColor('gold')}>gold</Button>
+            <Button className={classes.colors} variant="contained" style={{backgroundColor: 'orange'}} onClick={e=> changeColor('orange')}>orange</Button>
+            <div>Yellow colors</div>
+            <Button className={classes.colors} variant="contained" style={{backgroundColor: 'lightyellow'}} onClick={e=> changeColor('lightyellow')}>lightyellow</Button>
+            <Button className={classes.colors} variant="contained" style={{backgroundColor: 'lemonchiffon'}} onClick={e=> changeColor('lemonchiffon')}>lemonchiffon</Button>
+            <Button className={classes.colors} variant="contained" style={{backgroundColor: 'papayawhip'}} onClick={e=> changeColor('papayawhip')}>papayawhip</Button>
+            <Button className={classes.colors} variant="contained" style={{backgroundColor: 'moccasin'}} onClick={e=> changeColor('moccasin')}>moccasin</Button>
+            <Button className={classes.colors} variant="contained" style={{backgroundColor: 'khaki'}} onClick={e=> changeColor('khaki')}>khaki</Button>
+            <Button className={classes.colors} variant="contained" style={{backgroundColor: 'yellow'}} onClick={e=> changeColor('yellow')}>yellow</Button>
+            <div>Green colors</div>
+            <Button className={classes.colors} variant="contained" style={{backgroundColor: 'lawngreen'}} onClick={e=> changeColor('lawngreen')}>lawngreen</Button>
+            <Button className={classes.colors} variant="contained" style={{backgroundColor: 'limegreen'}} onClick={e=> changeColor('limegreen')}>limegreen</Button>
+            <Button className={classes.colors} variant="contained" style={{backgroundColor: 'lime'}} onClick={e=> changeColor('lime')}>lime</Button>
+            <Button className={classes.colors} variant="contained" style={{backgroundColor: 'green'}} onClick={e=> changeColor('green')}>green</Button>
+            <Button className={classes.colors} variant="contained" style={{backgroundColor: 'darkgreen', color: 'white'}} onClick={e=> changeColor('darkgreen')}>darkgreen</Button>
+            <Button className={classes.colors} variant="contained" style={{backgroundColor: 'springgreen'}} onClick={e=> changeColor('springgreen')}>springgreen</Button>
+            <Button className={classes.colors} variant="contained" style={{backgroundColor: 'palegreen'}} onClick={e=> changeColor('palegreen')}>palegreen</Button>
+            <Button className={classes.colors} variant="contained" style={{backgroundColor: 'darkseagreen'}} onClick={e=> changeColor('darkseagreen')}>darkseagreen</Button>
+            <Button className={classes.colors} variant="contained" style={{backgroundColor: 'mediumseagreen'}} onClick={e=> changeColor('mediumseagreen')}>mediumseagreen</Button>
+            <Button className={classes.colors} variant="contained" style={{backgroundColor: 'seagreen'}} onClick={e=> changeColor('seagreen')}>seagreen</Button>
+            <Button className={classes.colors} variant="contained" style={{backgroundColor: 'olivedrab'}} onClick={e=> changeColor('olivedrab')}>olivedrab</Button>
+            <div>Cyan colors</div>
+            <Button className={classes.colors} variant="contained" style={{backgroundColor: 'cyan'}} onClick={e=> changeColor('cyan')}>cyan</Button>
+            <Button className={classes.colors} variant="contained" style={{backgroundColor: 'aquamarine'}} onClick={e=> changeColor('aquamarine')}>aquamarine</Button>
+            <Button className={classes.colors} variant="contained" style={{backgroundColor: 'paleturquoise'}} onClick={e=> changeColor('paleturquoise')}>paleturquoise</Button>
+            <Button className={classes.colors} variant="contained" style={{backgroundColor: 'turquoise'}} onClick={e=> changeColor('turquoise')}>turquoise</Button>
+            <Button className={classes.colors} variant="contained" style={{backgroundColor: 'darkturquoise'}} onClick={e=> changeColor('darkturquoise')}>darkturquoise</Button>
+            <Button className={classes.colors} variant="contained" style={{backgroundColor: 'cadetblue', color: 'white'}} onClick={e=> changeColor('cadetblue')}>cadetblue</Button>
+            <Button className={classes.colors} variant="contained" style={{backgroundColor: 'teal', color: 'white'}} onClick={e=> changeColor('teal')}>teal</Button>
+            <div>Blue colors</div>
+            <Button className={classes.colors} variant="contained" style={{backgroundColor: 'lightblue'}} onClick={e=> changeColor('lightblue')}>lightblue</Button>
+            <Button className={classes.colors} variant="contained" style={{backgroundColor: 'lightskyblue'}} onClick={e=> changeColor('lightskyblue')}>lightskyblue</Button>
+            <Button className={classes.colors} variant="contained" style={{backgroundColor: 'deepskyblue'}} onClick={e=> changeColor('deepskyblue')}>deepskyblue</Button>
+            <Button className={classes.colors} variant="contained" style={{backgroundColor: 'lightsteelblue'}} onClick={e=> changeColor('lightsteelblue')}>lightsteelblue</Button>
+            <Button className={classes.colors} variant="contained" style={{backgroundColor: 'dodgerblue'}} onClick={e=> changeColor('dodgerblue')}>dodgerblue</Button>
+            <Button className={classes.colors} variant="contained" style={{backgroundColor: 'cornflowerblue'}} onClick={e=> changeColor('cornflowerblue')}>cornflowerblue</Button>
+            <Button className={classes.colors} variant="contained" style={{backgroundColor: 'royalblue'}} onClick={e=> changeColor('royalblue')}>royalblue</Button>
+            <Button className={classes.colors} variant="contained" style={{backgroundColor: 'blue', color: 'white'}} onClick={e=> changeColor('blue')}>blue</Button>
+            <Button className={classes.colors} variant="contained" style={{backgroundColor: 'mediumblue', color: 'white'}} onClick={e=> changeColor('mediumblue')}>mediumblue</Button>
+            <Button className={classes.colors} variant="contained" style={{backgroundColor: 'navy', color: 'white'}} onClick={e=> changeColor('navy')}>navy</Button>
+            <Button className={classes.colors} variant="contained" style={{backgroundColor: 'mediumslateblue'}} onClick={e=> changeColor('mediumslateblue')}>mediumslateblue</Button>
+            <div>Purple colors</div>
+            <Button className={classes.colors} variant="contained" style={{backgroundColor: 'lavender'}} onClick={e=> changeColor('lavender')}>lavender</Button>
+            <Button className={classes.colors} variant="contained" style={{backgroundColor: 'plum'}} onClick={e=> changeColor('plum')}>plum</Button>
+            <Button className={classes.colors} variant="contained" style={{backgroundColor: 'violet'}} onClick={e=> changeColor('violet')}>violet</Button>
+            <Button className={classes.colors} variant="contained" style={{backgroundColor: 'orchid'}} onClick={e=> changeColor('orchid')}>orchid</Button>
+            <Button className={classes.colors} variant="contained" style={{backgroundColor: 'fuchsia'}} onClick={e=> changeColor('fuchsia')}>fuchsia</Button>
+            <Button className={classes.colors} variant="contained" style={{backgroundColor: 'mediumorchid'}} onClick={e=> changeColor('mediumorchid')}>mediumorchid</Button>
+            <Button className={classes.colors} variant="contained" style={{backgroundColor: 'blueviolet'}} onClick={e=> changeColor('blueviolet')}>blueviolet</Button>
+            <Button className={classes.colors} variant="contained" style={{backgroundColor: 'darkorchid'}} onClick={e=> changeColor('darkorchid')}>darkorchid</Button>
+            <Button className={classes.colors} variant="contained" style={{backgroundColor: 'darkmagenta', color: 'white'}} onClick={e=> changeColor('darkmagenta')}>darkmagenta</Button>
+            <Button className={classes.colors} variant="contained" style={{backgroundColor: 'indigo', color: 'white'}} onClick={e=> changeColor('indigo')}>indigo</Button>
+            <div>Pink colors</div>
+            <Button className={classes.colors} variant="contained" style={{backgroundColor: 'pink'}} onClick={e=> changeColor('pink')}>pink</Button>
+            <Button className={classes.colors} variant="contained" style={{backgroundColor: 'hotpink'}} onClick={e=> changeColor('hotpink')}>hotpink</Button>
+            <Button className={classes.colors} variant="contained" style={{backgroundColor: 'deeppink'}} onClick={e=> changeColor('deeppink')}>deeppink</Button>
+            <Button className={classes.colors} variant="contained" style={{backgroundColor: 'palevioletred'}} onClick={e=> changeColor('palevioletred')}>orchid</Button>
+            <Button className={classes.colors} variant="contained" style={{backgroundColor: 'mediumvioletred'}} onClick={e=> changeColor('mediumvioletred')}>mediumvioletred</Button>
+            <div>White colors</div>
+            <Button className={classes.colors} variant="contained" style={{backgroundColor: 'white'}} onClick={e=> changeColor('white')}>white</Button>
+            <Button className={classes.colors} variant="contained" style={{backgroundColor: 'honeydew'}} onClick={e=> changeColor('honeydew')}>honeydew</Button>
+            <Button className={classes.colors} variant="contained" style={{backgroundColor: 'ghostwhite'}} onClick={e=> changeColor('ghostwhite')}>ghostwhite</Button>
+            <Button className={classes.colors} variant="contained" style={{backgroundColor: 'beige'}} onClick={e=> changeColor('beige')}>beige</Button>
+            <Button className={classes.colors} variant="contained" style={{backgroundColor: 'linen'}} onClick={e=> changeColor('linen')}>linen</Button>
+            <div>Gray colors</div>
+            <Button className={classes.colors} variant="contained" style={{backgroundColor: 'lightgray'}} onClick={e=> changeColor('lightgray')}>lightgray</Button>
+            <Button className={classes.colors} variant="contained" style={{backgroundColor: 'silver'}} onClick={e=> changeColor('silver')}>silver</Button>
+            <Button className={classes.colors} variant="contained" style={{backgroundColor: 'gray', color: 'white'}} onClick={e=> changeColor('gray')}>gray</Button>
+            <Button className={classes.colors} variant="contained" style={{backgroundColor: 'dimgray', color: 'white'}} onClick={e=> changeColor('dimgray')}>dimgray</Button>
+            <Button className={classes.colors} variant="contained" style={{backgroundColor: 'slategray', color: 'white'}} onClick={e=> changeColor('slategray')}>slategray</Button>
+            <Button className={classes.colors} variant="contained" style={{backgroundColor: 'darkslategray', color: 'white'}} onClick={e=> changeColor('darkslategray')}>darkslategray</Button>
+            <Button className={classes.colors} variant="contained" style={{backgroundColor: 'black', color: 'white'}} onClick={e=> changeColor('black')}>black</Button>
+            <div>Brown colors</div>
+            <Button className={classes.colors} variant="contained" style={{backgroundColor: 'brown', color: 'white'}} onClick={e=> changeColor('brown')}>brown</Button>
+            <Button className={classes.colors} variant="contained" style={{backgroundColor: 'wheat'}} onClick={e=> changeColor('wheat')}>wheat</Button>
+            <Button className={classes.colors} variant="contained" style={{backgroundColor: 'burlywood'}} onClick={e=> changeColor('burlywood')}>burlywood</Button>
+            <Button className={classes.colors} variant="contained" style={{backgroundColor: 'sandybrown'}} onClick={e=> changeColor('sandybrown')}>sandybrown</Button>
+            <Button className={classes.colors} variant="contained" style={{backgroundColor: 'goldenrod'}} onClick={e=> changeColor('goldenrod')}>goldenrod</Button>
+            <Button className={classes.colors} variant="contained" style={{backgroundColor: 'chocolate'}} onClick={e=> changeColor('chocolate')}>chocolate</Button>
+            <Button className={classes.colors} variant="contained" style={{backgroundColor: 'sienna', color: 'white'}} onClick={e=> changeColor('sienna')}>sienna</Button>
+            <Button className={classes.colors} variant="contained" style={{backgroundColor: 'maroon', color: 'white'}} onClick={e=> changeColor('maroon')}>maroon</Button>
         </div>
     );
     const [buttonsGroup, setButtonsGroup] = useState(textGroup);
-    const [value, setValue] = useState(0);
-
     const handleTabChange = (event, newValue) => {
         if(newValue === 0) {
             setButtonsGroup(textGroup);
-        } else if(newValue === 1) {
-            setButtonsGroup(colorGroup);
         } else {
-            setButtonsGroup(backgroundColorGroup);
+            setButtonsGroup(colorGroup);
         }
-        setValue(newValue);
+        setTebValue(newValue);
+        console.log(`tab value: ${tabValue}`);
     };
 
 
@@ -289,7 +372,7 @@ export default function Catalog() {
         <Container className={classes.container}>
             <Paper className={classes.paper}>
                 <Tabs
-                    value={value}
+                    value={tabValue}
                     onChange={handleTabChange}
                     indicatorColor="primary"
                     variant="scrollable"
@@ -305,6 +388,32 @@ export default function Catalog() {
                 {sentenceStyle.sentenceBody}
             </div>
         </Container>
+        <div className={classes.finish}>
+        {writer && 
+                <Button
+                    onClick={saveSentenveClicked}
+                    variant="contained"
+                    color="secondary"
+                    className={classes.finishButton}
+                    startIcon={<CloudUploadIcon />}
+                >
+                    Upload now
+                </Button>}
+            <Button
+                onClick={buySentenveClicked}
+                variant="contained"
+                color="secondary"
+                className={classes.finishButton}
+                startIcon={<AddShoppingCartIcon />}
+            >
+                Buy now
+            </Button>
+        </div>
+        <Snackbar open={alertOpen} autoHideDuration={6000} onClose={handleAlertClose}>
+            <Alert onClose={handleAlertClose} severity="warning">
+                You have to be logged in before making such action!
+            </Alert>
+        </Snackbar>
 
         {/* change Font Size section */}
         <div>

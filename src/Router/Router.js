@@ -8,7 +8,9 @@ import theme from '../Theme';
 import MainView from '../Components/MainViewPage/MainView';
 import Catalog from '../Components/CatalogPage/Catalog';
 import Editor from '../Components/SentenceEditor/Editor';
-import page from '../Components/ContactUsPage/page';
+import MyOrders from '../Components/UsersPages/MyOrders';
+import MySentences from '../Components/UsersPages/MySentences';
+import ProfilePage from '../Components/LoginView/ProfilePage';
 import Header from '../Components/Header';
 import Footer from '../Components/Footer';
 
@@ -31,7 +33,9 @@ const InspirgramRouter = ({}) => {
                 <Route exact path="/" component={MainView} />
                 <Route exact path="/Catalog" component={Catalog}/>
                 <Route exact path="/Editor" component={Editor}/>
-                <Route exact path="/page" component={page}/>
+                <Route exact path="/MyOrders" component={MyOrders}/>
+                <Route exact path="/MySentences" component={MySentences}/>
+                <Route exact path="/ProfilePage" component={ProfilePage}/>
                 <Footer />
             </App>
         </MuiThemeProvider>

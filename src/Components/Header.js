@@ -1,9 +1,8 @@
 import React, { useState } from 'react';
-import { NavLink } from 'react-router-dom';
+import { NavLink, Redirect } from 'react-router-dom';
 import { makeStyles, Toolbar, IconButton, Button, Typography } from '@material-ui/core';
 import AccountCircleOutlinedIcon from '@material-ui/icons/AccountCircleOutlined';
-import MenuRoundedIcon from '@material-ui/icons/MenuRounded';
-import LocalMallOutlinedIcon from '@material-ui/icons/LocalMallOutlined';
+import AssignmentIcon from '@material-ui/icons/Assignment';import LocalMallOutlinedIcon from '@material-ui/icons/LocalMallOutlined';
 import LoginDialog from './LoginView/LogInDialog';
 import SignedupDialog from './LoginView/SignupDialog';
 
@@ -47,7 +46,7 @@ const useStyles = makeStyles(theme => ({
         '&:focus': {
             flexShrink: 0,
             textDecoration: 'none',
-            color: 'tomato',
+            color: 'purple',
         },
         [theme.breakpoints.down(700)]: {
             padding: '5px',
@@ -59,14 +58,36 @@ const useStyles = makeStyles(theme => ({
         background: 'linear-gradient(45deg, #FE6B8B 30%, #FF8E53 90%)',
         boxShadow: '0 3px 5px 2px rgba(255, 105, 135, .3)',
     },
+    iconsContainer: {
+        display: 'flex',
+        flexDirection: 'row',
+        justifyContent: 'space-between',
+        alignItems: 'center',
+        width: '10%',
+        paddingTop: '4px',
+        [theme.breakpoints.down(1200)]: {
+            width: '15%',
+        },
+        [theme.breakpoints.down(800)]: {
+            width: '20%',
+        },
+        [theme.breakpoints.down(600)]: {
+            width: '30%',
+        },
+        [theme.breakpoints.down(400)]: {
+            width: '40%',
+        },
+    },
 }));
 
 
 export default function Header(props) {
     const classes = useStyles()
-    const [isLoggedIn, setIsLoggedIn] = useState(false);
+    const writer = true;
+    const [isLoggedIn, setIsLoggedIn] = useState(false); 
     const [open, setOpen] = useState(false);
     const [dialog, setDialog] = useState(true);
+    const [redirect, setRedirect] = useState(false);
     const changeDialog = () => {
         setDialog(!dialog);
     };
@@ -86,20 +107,21 @@ export default function Header(props) {
         </Button>
     );
     const loggedIn = (
-        <div>
-            <IconButton className={classes.icons}>
-                <AccountCircleOutlinedIcon />
-            </IconButton>
-            <IconButton className={classes.icons}>
-                <LocalMallOutlinedIcon />
-            </IconButton>
-            <IconButton className={classes.icons}>
-                <MenuRoundedIcon />
-            </IconButton>
+        <div className={classes.iconsContainer}>
+            {writer &&
+            <NavLink exact to="/MySentences">
+                <AssignmentIcon style={{color: 'dimgray'}}/>
+            </NavLink>}
+            <NavLink exact to="/MyOrders">
+                <LocalMallOutlinedIcon style={{color: 'dimgray'}}/>
+            </NavLink>
+            <NavLink exact to="/ProfilePage">
+                <AccountCircleOutlinedIcon style={{color: 'dimgray'}}/>
+            </NavLink>
         </div>
     );
 
-    return (
+    return redirect ? <Redirect to={redirect} /> :(
         <div className={classes.root}>
             <Toolbar className={classes.toolbar}>
                 <Typography className={classes.toolbarLogo}>Logo</Typography>
@@ -115,7 +137,7 @@ export default function Header(props) {
                 <NavLink exact to="Catalog" color="inherit" variant="body2" className={classes.toolbarLink}>
                     Catalog
                 </NavLink>
-                <NavLink to="/page" color="inherit" variant="body2" className={classes.toolbarLink}>
+                <NavLink to="/" color="inherit" variant="body2" className={classes.toolbarLink}>
                     Contact Us
                 </NavLink>
                 <NavLink to="/Editor" color="inherit" variant="body2" className={classes.toolbarLink}>
