@@ -14,28 +14,27 @@ const useStyles = makeStyles(theme => ({
 }));
 
 const mainFeaturedPost = {
-    title: 'Title of a longer featured blog post',
+    title: 'Here we tell about inspirgram idea',
     description:
-        "Multiple lines of text that form the lede, informing new readers quickly and efficiently about what's most interesting in this post's contents.",
-    image: 'https://source.unsplash.com/random',
+        "Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem ipsum dolor sit amet, consectetur adipiscing elit.",
+    image: 'https://images.unsplash.com/photo-1579065560489-989b0cc394ce?ixlib=rb-1.2.1&q=80&fm=jpg&crop=entropy&cs=tinysrgb&w=1080&fit=max',
     imgText: 'main image description',
 };
 
 const featuredPosts = [
     {
-        title: 'Featured post',
-        date: 'Nov 12',
+        title: 'Inspirgram Shop',
         description:
-            'This is a wider card with supporting text below as a natural lead-in to additional content.',
-        image: 'https://source.unsplash.com/random',
+            'Here we tell about our shop. as Lorem ipsum dolor sit amet, consectetur adipiscing elit sed do eiusmod tempor incididunt ut.',
+        image: 'https://images.unsplash.com/photo-1580639006571-11f5da1d1731?ixlib=rb-1.2.1&q=80&fm=jpg&crop=entropy&cs=tinysrgb&w=1080&fit=max',
         imageText: 'Image Text',
     },
     {
-        title: 'Post title',
-        date: 'Nov 11',
+        title: 'Inspirgram Creativity',
+        date: '',
         description:
-            'This is a wider card with supporting text below as a natural lead-in to additional content.',
-        image: 'https://source.unsplash.com/random',
+            'Here we tell about our content. Lorem ipsum dolor sit amet, consectetur adipiscing elit sed do eiusmod tempor incididunt ut.',
+        image: 'https://images.unsplash.com/photo-1579805876343-8b915fa600c7?ixlib=rb-1.2.1&q=80&fm=jpg&crop=entropy&cs=tinysrgb&w=1080&fit=max',
         imageText: 'Image Text',
     },
 ];

@@ -41,7 +41,6 @@ const useStyles = makeStyles(theme => ({
     colors: {
         textTransform: 'initial',
         margin: '2px',
-        // border: '1px solid',
         textAlign: 'center',
     },
     button: {
@@ -82,7 +81,6 @@ const useStyles = makeStyles(theme => ({
     finish: {
         width: '80%',
         margin: '0px auto',
-        // border: '1px solid',
         height: '10vh',
         display: 'flex',
         flexDirection: 'row',

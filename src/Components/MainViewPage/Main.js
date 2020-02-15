@@ -9,24 +9,32 @@ import Button from '@material-ui/core/Button';
 const useStyles = makeStyles(theme => ({
     root: {
         margin: '0px auto',
-        height: '100vh',
+        height: '100%',
         width: '97%',
     },
     image: {
-        backgroundImage: 'url(https://source.unsplash.com/random)',
-        backgroundRepeat: 'no-repeat',
+        backgroundImage: 'linear-gradient(to bottom right, pink , white , pink)',
         backgroundColor:
             theme.palette.type === 'dark' ? theme.palette.grey[900] : theme.palette.grey[50],
         backgroundSize: 'cover',
         backgroundPosition: 'center',
+        display: 'flex',
+        alignItems: 'center',
+    },
+    sentence: {
+        fontFamily: '"Courier New", Courier, monospace',
+        fontSize: '60px',
+        textAlign: 'center',
+        margin: '10px',
     },
     textGrid: {
-        backgroundColor: 'rgba(255, 99, 71, 0.5)',
+        backgroundImage: 'linear-gradient(to bottom right, lemonchiffon , white , lemonchiffon)',
     },
     paper: {
         margin: theme.spacing(8, 4),
         display: 'flex',
         flexDirection: 'column',
+        justifyContent: 'start',
         alignItems: 'left',
     },
     avatar: {
@@ -43,41 +51,44 @@ const useStyles = makeStyles(theme => ({
     seperator: {
         margin: '10vh',
     },
+    button: {
+        backgroundImage: 'linear-gradient(to bottom right, pink , white , pink)',
+        textTransform: 'initial',
+        width: '20vh',
+    },
 }));
 
 export default function SignInSide() {
     const classes = useStyles();
+    const gotoEdit = () => {
+        //  set redirect to editor
+        //  set sentence body to editor 
+    };
 
     return (
         <Grid container component="main" className={classes.root}>
             <CssBaseline />
-            <Grid item xs={12} sm={4} md={7} className={classes.image} />
-            <Grid item xs={12} sm={8} md={5} component={Paper} elevation={6} square className={classes.textGrid}>
+            <Grid item xs={12} sm={7} md={7} className={classes.image}>
+                <Typography className={classes.sentence}>
+                    "Dont let yesterday take up too much of today"
+                </Typography>
+            </Grid>
+            <Grid item xs={12} sm={5} md={5} component={Paper} elevation={6} square className={classes.textGrid}>
                 <div className={classes.paper}>
                     <Typography component="h1" variant="h5">
-                        Image with text
+                        inspirgem Editor
                     </Typography>
                     <p><b>
-                        bla bla bla, our website is very very nice.
-                        bla bla bla, our website is very very nice and good looking.
-                        bla bla bla, our website is very very nice.
-                        bla bla bla, our website is very very nice and good looking.
-                        bla bla bla, our website is very very nice.
-                        bla bla bla, our website is very very nice and good looking.
-                        bla bla bla, our website is very very nice.
-                        bla bla bla, our website is very very nice and good looking.
-                        bla bla bla, our website is very very nice.
-                        bla bla bla, our website is very very nice and good looking.
-                        bla bla bla, our website is very very nice.
-                        bla bla bla, our website is very very nice and good looking.
-                        bla bla bla, our website is very very nice.
-                        bla bla bla, our website is very very nice and good looking.
-                        bla bla bla, our website is very very nice.
-                        bla bla bla, our website is very very nice and good looking.
+                        here we tell about our editor...
+                        Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut 
+                        labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris 
+                        nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse 
+                        cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui 
+                        officia deserunt mollit anim id est laborum.
                     </b></p>
                     <div className={classes.seperator}></div>
                     <Grid item xs={3}>
-                        <Button variant="outlined">button</Button>
+                        <Button className={classes.button} variant="outlined" onClick={gotoEdit}>Goto Edit</Button>
                     </Grid>
                 </div>
             </Grid>
