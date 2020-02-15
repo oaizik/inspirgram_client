@@ -12,7 +12,7 @@ import YouTubeIcon from '@material-ui/icons/YouTube';
 
 function Copyright() {
     return (
-        <Typography variant="body2" style={{color: 'white', margin: '5vh 0px 0px 5vh', textAlign: 'left'}} align="center">
+        <Typography variant="body2" style={{color: 'white', marginTop: '5vh', textAlign: 'left', fontSize: '10px'}} align="center">
             {'Copyright © '}
             <Link color="inherit" href="https://material-ui.com/">
                 Inspirgram
@@ -26,13 +26,15 @@ function Copyright() {
 const useStyles = makeStyles(theme => ({
     footer: {
         backgroundImage: 'linear-gradient(to bottom right, black 20%, #00002F, dimgray)',
-        // backgroundColor: '#00003F',
         marginTop: theme.spacing(5),
         padding: theme.spacing(6, 0),
         height: '100%',
+        [theme.breakpoints.down(800)]: {
+            marginTop: theme.spacing(8),
+        },
     },
     container: {
-      height: '100%',
+        height: '100%',
         display: 'flex',
         flexDirection: 'row',
         justifyContent: 'space-between',
@@ -92,8 +94,11 @@ const useStyles = makeStyles(theme => ({
         flexDirection: 'row',
         justifyContent: 'center',
     },
-    copywrite: {
-        marginTop: '5vh',
+    copyrite: {
+        marginTop: '2vh',
+        [theme.breakpoints.down(800)]: {
+            display: 'none',
+        },
     },
 }));
 
@@ -112,6 +117,9 @@ export default function Footer(props) {
                             <path d="M278 233 c7 -3 16 -2 19 1 4 3 -2 6 -13 5 -11 0 -14 -3 -6 -6z"/>
                         </g>
                     </svg>
+                    <div className={classes.copyrite}>
+                        <Copyright />
+                    </div>
                 </div>
                 <div className={classes.contact}>
                     <Typography className={classes.font} variant="h6" align="center" gutterBottom>
@@ -161,15 +169,7 @@ export default function Footer(props) {
                         </NavLink>
                     </div>
                 </div>
-                {/* <Typography variant="h6" align="center" gutterBottom>
-                  Footer
-                </Typography>
-                <Typography variant="subtitle1" align="center" color="textSecondary" component="p">
-                  Something here to give the footer a purpose!
-                </Typography>
-                <Copyright /> */}
             </Container>
-            <Copyright className={classes.copywrite} />
         </footer>
     );
 }

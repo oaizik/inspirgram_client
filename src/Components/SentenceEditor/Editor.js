@@ -61,8 +61,8 @@ const useStyles = makeStyles(theme => ({
     },
     tab: {
         textTransform: 'initial',
-        // background: 'linear-gradient(45deg, #2196F3 30%, #21CBF3 90%)',
-        // boxShadow: '0 3px 5px 2px rgba(33, 203, 243, .3)',
+        color: '#c71585',
+        background: 'linear-gradient(45deg, #c71585 5%, white 10%)',
     },
     input: {
         margin: '10% auto',
@@ -74,13 +74,14 @@ const useStyles = makeStyles(theme => ({
         height: '20vh',
         fontFamily: '"Lucida Console", Monaco, monospace',
         background: 'linear-gradient(45deg, #FE6B8B 30%, #FF8E53 90%)',
-        [theme.breakpoints.down(700)]: {
-            margin: '20% auto',
+        [theme.breakpoints.down(950)]: {
+            width: '99%',
+            marginTop: '5%',
         },
     },
     finish: {
         width: '80%',
-        margin: '0px auto',
+        margin: '20px auto',
         height: '10vh',
         display: 'flex',
         flexDirection: 'row',
@@ -103,7 +104,7 @@ function Alert(props) {
     return <MuiAlert elevation={6} variant="filled" {...props} />;
 }
 
-export default function Catalog() {
+export default function Editor() {
     const classes = useStyles();
     const saveSentenveClicked = async () => {
         //  if user is not logged in
@@ -160,23 +161,23 @@ export default function Catalog() {
         }
         setAlertOpen(false);
     }; 
-    const ChangeTextSize = async e => {
-        await setSentenceStyle({...sentenceStyle, fontSize: `${e}px`, lineHeight: `${e+10}px`});
+    const ChangeTextSize = e => {
+        setSentenceStyle({...sentenceStyle, fontSize: `${e}px`, lineHeight: `${e+10}px`});
         console.log(`sentence style font size: ${sentenceStyle.fontSize}`);
         setOpenFontSize(false);
     };
-    const ChangeTextAlign = async e => {
-        await setSentenceStyle({...sentenceStyle, textAlign: `${e}`});
+    const ChangeTextAlign = e => {
+        setSentenceStyle({...sentenceStyle, textAlign: `${e}`});
         console.log(`sentence style text align: ${sentenceStyle.textAlign}`);
         setOpenTextAlign(false);
     };
-    const ChangeAlignItems = async e => {
-        await setSentenceStyle({...sentenceStyle, alignItems: `${e}`});
+    const ChangeAlignItems = e => {
+        setSentenceStyle({...sentenceStyle, alignItems: `${e}`});
         console.log(`sentence style text align: ${sentenceStyle.textAlign}`);
         setOpenAlignItems(false);
     };
-    const ChangeFontFamily = async e => {
-        await setSentenceStyle({...sentenceStyle, fontFamily: `${e}`});
+    const ChangeFontFamily = e => {
+        setSentenceStyle({...sentenceStyle, fontFamily: `${e}`});
         console.log(`sentence style text align: ${sentenceStyle.fontFamily}`);
         setOpenFontFamily(false);
     };   
