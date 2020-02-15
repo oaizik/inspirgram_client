@@ -9,6 +9,9 @@ import SignedupDialog from './LoginView/SignupDialog';
 
 
 const useStyles = makeStyles(theme => ({
+    root: {
+        backgroundImage: 'linear-gradient(to bottom right, pink , white , pink)',
+    },
     toolbar: {
         borderBottom: `1px solid ${theme.palette.divider}`,
     },
@@ -78,7 +81,7 @@ export default function Header(props) {
     );
 
     return (
-        <React.Fragment>
+        <div className={classes.root}>
             <Toolbar className={classes.toolbar}>
                 <Typography>Logo</Typography>
                 <Typography component="h2" variant="h5" color="inherit" align="center" className={classes.toolbarTitle}>
@@ -93,7 +96,7 @@ export default function Header(props) {
                 <NavLink exact to="Catalog" color="inherit" variant="body2" className={classes.toolbarLink}>
                     Catalog
                 </NavLink>
-                <NavLink to="/" color="inherit" variant="body2" className={classes.toolbarLink}>
+                <NavLink to="/page" color="inherit" variant="body2" className={classes.toolbarLink}>
                     Contact Us
                 </NavLink>
                 <NavLink to="/Editor" color="inherit" variant="body2" className={classes.toolbarLink}>
@@ -114,7 +117,7 @@ export default function Header(props) {
                 changeDialog={changeDialog}
             />
             )}
-        </React.Fragment>
+        </div>
     );
 }
 
