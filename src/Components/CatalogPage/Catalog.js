@@ -62,6 +62,7 @@ export default function Catalog() {
                                     title="Image title"
                                 />
                                 <CardActions style={{display: 'flex', justifyContent: 'space-between',}}>
+                                    {/* that icon should the sentence content to user liked list [if we decide to make that list] */}
                                     <IconButton color="primary" aria-label="add to shopping cart" onClick={e=> setLike(!like)}>
                                         {like ? (
                                             <FavoriteBorderTwoToneIcon style={{ color: 'red' }}/>
@@ -69,9 +70,11 @@ export default function Catalog() {
                                             <FavoriteBorderTwoToneIcon style={{ color: 'green' }}/>
                                         )}
                                     </IconButton>
+                                    {/* that icon should move to editor page with the sentence content */}
                                     <IconButton color="primary" aria-label="add to shopping cart">
                                         <EditOutlinedIcon />
                                     </IconButton>
+                                    {/* that icon should move to sentence content to the user cart */}
                                     <IconButton color="primary" aria-label="add to shopping cart">
                                         <AddShoppingCartIcon />
                                     </IconButton>

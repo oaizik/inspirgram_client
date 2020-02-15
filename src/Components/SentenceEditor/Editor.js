@@ -81,7 +81,7 @@ const useStyles = makeStyles(theme => ({
 
 export default function Catalog() {
     const classes = useStyles();
-    //  sentence state
+    //  sentence state, thats the sentence style we need to get from the db
     const [sentenceStyle, setSentenceStyle] = useState({
         color: 'black',
         backgroundColor: 'snow',
