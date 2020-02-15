@@ -11,6 +11,7 @@ import SignedupDialog from './LoginView/SignupDialog';
 const useStyles = makeStyles(theme => ({
     root: {
         backgroundImage: 'linear-gradient(to bottom right, pink , white , pink)',
+        marginBottom: '1vh',
     },
     toolbar: {
         borderBottom: `1px solid ${theme.palette.divider}`,
@@ -18,8 +19,15 @@ const useStyles = makeStyles(theme => ({
     toolbarTitle: {
         flex: 1,
         marginLeft: '12vh',
+        [theme.breakpoints.down(700)]: {
+            display: 'none',
+        },
     },
-    //  problem: when switching pages the toolbarSeacondary text changes
+    toolbarLogo: {
+        [theme.breakpoints.down(700)]: {
+            flex: 1,
+        },
+    },
     toolbarSecondary: {
         justifyContent: 'center',
         overflowX: 'auto',
@@ -36,9 +44,20 @@ const useStyles = makeStyles(theme => ({
             textDecoration: 'none',
             color: 'tomato',
         },
+        '&:focus': {
+            flexShrink: 0,
+            textDecoration: 'none',
+            color: 'tomato',
+        },
+        [theme.breakpoints.down(700)]: {
+            padding: '5px',
+        },
     },
     registerButton: {
+        textTransform: 'initial',
         width: '16vh',
+        background: 'linear-gradient(45deg, #FE6B8B 30%, #FF8E53 90%)',
+        boxShadow: '0 3px 5px 2px rgba(255, 105, 135, .3)',
     },
 }));
 
@@ -63,7 +82,7 @@ export default function Header(props) {
     };
     const register = (
         <Button className={classes.registerButton} variant="outlined" size="small" onClick={registerClicked}>
-            register
+            Log-in
         </Button>
     );
     const loggedIn = (
@@ -83,7 +102,7 @@ export default function Header(props) {
     return (
         <div className={classes.root}>
             <Toolbar className={classes.toolbar}>
-                <Typography>Logo</Typography>
+                <Typography className={classes.toolbarLogo}>Logo</Typography>
                 <Typography component="h2" variant="h5" color="inherit" align="center" className={classes.toolbarTitle}>
                     Inspirgram
                 </Typography>

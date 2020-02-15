@@ -11,14 +11,26 @@ const useStyles = makeStyles(theme => ({
         height: '70vh',
         flexDirection: 'row',
         justifyContent: 'space-between',
+        [theme.breakpoints.down(700)]: {
+            height: '100%',
+            flexDirection: 'column-reverse',
+            alignItems: 'center',
+        },
     },
     paper: {
-        width: '30%',
+        width: '40%',
+        backgroundColor: 'azure',
+        [theme.breakpoints.down(700)]: {
+            marginTop: '5vh',
+            width: '90%',
+        },
     },
     buttonGroup: {
         marginTop: '4vh',
     },
     colorGroup: {
+        fontFamily: "'Lato', sans-serif",
+        textAlign: 'center',
         display: 'flex',
         flexDirection: 'column',
         overflow: 'scroll',
@@ -33,7 +45,8 @@ const useStyles = makeStyles(theme => ({
     button: {
         textTransform: 'initial',
         margin: '10px 10px 10px 10px',
-        backgroundImage: 'linear-gradient(to right, pink, lemonchiffon)',
+        background: 'linear-gradient(45deg, #FE6B8B 30%, #FF8E53 90%)',
+        boxShadow: '0 3px 5px 2px rgba(255, 105, 135, .3)',
     },
     formControl: {
         margin: theme.spacing(1),
@@ -47,17 +60,22 @@ const useStyles = makeStyles(theme => ({
     },
     tab: {
         textTransform: 'initial',
+        // background: 'linear-gradient(45deg, #2196F3 30%, #21CBF3 90%)',
+        // boxShadow: '0 3px 5px 2px rgba(33, 203, 243, .3)',
     },
     input: {
-        margin: '20% auto',
+        margin: '10% auto',
         display: 'flex',
         flexDirection: 'column',
         justifyContent: 'end',
         alignItems: 'center',
-        width: '90%',
+        width: '95%',
         height: '20vh',
         fontFamily: '"Lucida Console", Monaco, monospace',
-        backgroundImage: 'linear-gradient(to right, pink, lemonchiffon)',
+        background: 'linear-gradient(45deg, #FE6B8B 30%, #FF8E53 90%)',
+        [theme.breakpoints.down(700)]: {
+            margin: '20% auto',
+        },
     },
 }));
 
@@ -66,7 +84,7 @@ export default function Catalog() {
     //  sentence state
     const [sentenceStyle, setSentenceStyle] = useState({
         color: 'black',
-        backgroundColor: 'gray',
+        backgroundColor: 'snow',
         fontFamily: 'Verdana, Geneva, sans-serif', //  safe fonts
         fontSize: '40px',   //  40 - 60      
         lineHeight: '50px', //  adjust according the font size + 10
@@ -76,16 +94,17 @@ export default function Catalog() {
         textAlign: 'left',    //  left, right, justify
         alignItems: 'center',   //    start, end
         sentenceBody: 'Im a testing sentence! Lets see how its gona work...',
-        //
+        //  unmutable
         padding: '10px 10px 10px 10px',
-        border: '2px solid',
-        borderRadius: '20px',
-        width: '55%',
+        border: '0.5px solid',
+        borderRadius: '2%',
+        width: '90%',
+        minHeight: '50vh',
         display: 'flex',
     });
-    //  if user is writer he can write ang change sentence body
-    const writer = false;
-
+    //  if user is writer he can write and change sentence body
+    const writer = true;
+    let bCounter = 0, uCounter = 0, iCounter = 0;
     const [openFontSize, setOpenFontSize] = useState(false);
     const [openTextAlign, setOpenTextAlign] = useState(false);
     const [openAlignItems, setOpenAlignItems] = useState(false);
@@ -112,18 +131,33 @@ export default function Catalog() {
         setOpenFontFamily(false);
     };   
     const setFontWeight = () => {
-        setSentenceStyle({...sentenceStyle, fontWeight: 'bold'});
-        // sentenceStyle.fontWeight === 'bold' ? setSentenceStyle({...sentenceStyle, fontWeight: 'bold'}) : setSentenceStyle({...sentenceStyle, fontWeight: 'normal'});
+        if(bCounter === 0) {
+            setSentenceStyle({...sentenceStyle, fontWeight: 'bold'});
+            bCounter = 1;
+        } else {
+            setSentenceStyle({...sentenceStyle, fontWeight: 'normal'});
+            bCounter = 0;
+        }
         console.log(`sentence style font-weight: ${sentenceStyle.fontWeight}`);
     };
     const setFontStyle = () => {
-        setSentenceStyle({...sentenceStyle, fontStyle: 'italic'});
-        // sentenceStyle.fontStyle === 'normal' ? setSentenceStyle({...sentenceStyle, fontStyle: 'italic'}) : setSentenceStyle({...sentenceStyle, fontStyle: 'normal'});
+        if(iCounter === 0) {
+            setSentenceStyle({...sentenceStyle, fontStyle: 'italic'});
+            iCounter = 1;
+        } else {
+            setSentenceStyle({...sentenceStyle, fontStyle: 'normal'});
+            iCounter = 0;
+        }
         console.log(`sentence style font-style: ${sentenceStyle.fontStyle}`);
     };
     const setUnderLine = () => {
-        setSentenceStyle({...sentenceStyle, textDecoration: 'underline'});
-        // sentenceStyle.textDecoration === 'none' ? setSentenceStyle({...sentenceStyle, textDecoration: 'underline'}) : setSentenceStyle({...sentenceStyle, textDecoration: 'none'});
+        if(uCounter === 0) {
+            setSentenceStyle({...sentenceStyle, textDecoration: 'underline'});
+            uCounter = 1;
+        } else {
+            setSentenceStyle({...sentenceStyle, textDecoration: 'none'});
+            uCounter = 0;
+        }
         console.log(`sentence style text-decoration: ${sentenceStyle.textDecoration}`);
     };
     const changeTextColor = c => {
@@ -166,6 +200,7 @@ export default function Catalog() {
     const colorGroup = (
         //  need to add all the colors from table, and arrange according to primary color and gradiant
         <div className={classes.colorGroup}>
+            <div>Red Colors:</div>
             <div style={{backgroundColor: 'lightsalmon'}} className={classes.colorDiv} onClick={e=> changeTextColor('lightsalmon')}>lightsalmon</div>
             <div style={{backgroundColor: 'salmon'}} className={classes.colorDiv} onClick={e=> changeTextColor('salmon')}>salmon</div>
             <div style={{backgroundColor: 'lightcoral'}} className={classes.colorDiv} onClick={e=> changeTextColor('lightcoral')}>lightcoral</div>
@@ -246,7 +281,7 @@ export default function Catalog() {
     <React.Fragment>
         <div className={classes.heroContent}>
             <Container maxWidth="sm">
-                <Typography component="h2" variant="h4" align="center" color="textPrimary" gutterBottom>
+                <Typography style={{fontFamily: "'Lato', sans-serif"}} component="h2" variant="h4" align="center" color="textPrimary" gutterBottom>
                     Welcome to our Mighty editor!
                 </Typography>
             </Container>
@@ -257,13 +292,12 @@ export default function Catalog() {
                     value={value}
                     onChange={handleTabChange}
                     indicatorColor="primary"
-                    textColor="primary"
                     variant="scrollable"
                     scrollButtons="auto"
                 >
-                    <Tab className={classes.tab} label="text" />
-                    <Tab className={classes.tab} label="color" />
-                    <Tab className={classes.tab} label="backgroung color" />
+                    <Tab className={classes.tab} label="Text" />
+                    <Tab className={classes.tab} label="Color" />
+                    <Tab className={classes.tab} label="Background color" />
                 </Tabs>
                 {buttonsGroup}
             </Paper>
