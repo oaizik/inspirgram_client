@@ -1,8 +1,13 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {Snackbar, TextField, Tab, Tabs, Paper, Button, Typography, makeStyles, Container, Dialog, DialogActions, DialogContent, DialogTitle, InputLabel, Input, MenuItem, FormControl, Select } from '@material-ui/core';
 import AddShoppingCartIcon from '@material-ui/icons/AddShoppingCart';
 import CloudUploadIcon from '@material-ui/icons/CloudUpload';
 import MuiAlert from '@material-ui/lab/Alert';
+import { Redirect } from 'react-router'
+
+import { connect } from 'react-redux';
+import { createSentence } from '../../redux/actions/sentenceActions';
+import store from '../../redux/store';
 
 const useStyles = makeStyles(theme => ({
     heroContent: {
@@ -104,57 +109,96 @@ function Alert(props) {
     return <MuiAlert elevation={6} variant="filled" {...props} />;
 }
 
-export default function Editor() {
-    const classes = useStyles();
-    const saveSentenveClicked = async () => {
-        //  if user is not logged in
-            handleAlertClick();
-        //  else
-        //  await need to save the sentence to the db
-        //  return success or failed to the user
-    };
-    const buySentenveClicked = async () => {
-        //  if user is not logged in
-        handleAlertClick();
-        //  else
-        //  await need to save the order to the db
-        //  move to payPal payment
-    };
-    //  sentence state, thats the sentence style we need to get from the db
-    const [sentenceStyle, setSentenceStyle] = useState({
+const sentenceDefaultStyle = {
+    style: {
         color: 'black',
-        backgroundColor: 'snow',
-        fontFamily: 'Verdana, Geneva, sans-serif', //  safe fonts
-        fontSize: '40px',   //  40 - 60      
-        lineHeight: '50px', //  adjust according the font size + 10
+        backgroundColor: 'white',
+        fontFamily: 'Courier New", Courier, monospace', //  safe fonts
+        fontSize: '50px',   //  40 - 60      
         fontWeight: 'normal',  //  toggle between normal/bold
         fontStyle: 'normal',   //  toggle between normal/italic
         textDecoration: 'none', //  toogle between none/underline
-        textAlign: 'left',    //  left, right, justify
+        textAlign: 'center',    //  left, right, justify
         alignItems: 'center',   //    start, end
-        sentenceBody: 'Im a testing sentence! Lets see how its gona work...',
-        //  unmutable
-        padding: '10px 10px 10px 10px',
-        border: '0.5px solid',
-        borderRadius: '2%',
-        width: '90%',
-        minHeight: '50vh',
-        display: 'flex',
-    });
-    //  if user is writer he can write and change sentence body
-    const writer = true;
-    let bCounter = 0, uCounter = 0, iCounter = 0;
-    const [openFontSize, setOpenFontSize] = useState(false);
-    const [openTextAlign, setOpenTextAlign] = useState(false);
-    const [openAlignItems, setOpenAlignItems] = useState(false);
-    const [openFontFamily, setOpenFontFamily] = useState(false);
-    const [tabValue, setTebValue] = useState(0);
-    const [alertOpen, setAlertOpen] = React.useState(false);
+    },
+    sentenceBody: '"Dont let yesterday take up too much of today"',
+    sentenceId: 3,
+};
 
+const Editor = props => {
+    const classes = useStyles();
+    const [redirect, setRedirect] = useState(undefined);
+    const handleWriter = () => {
+        setWriter(true);
+        setSentenceBody('please enter your creation in the input field');
+    };
+
+    useEffect(() => {
+        const state = store.getState();
+        if(props.location.params === -1) {
+            console.log('come from "/"');
+        } else if(props.location.params) {   
+            console.log('come from "/Catalog"');      
+            setSentenceId(state.sentences.items[props.location.params-1].sentenceId);
+            setSentenceBody(state.sentences.items[props.location.params-1].sentenceBody);
+            setSentenceStyle({...sentenceStyle, 
+                textColor: state.sentences.items[props.location.params-1].style.textColor, 
+                backgroundColor: state.sentences.items[props.location.params-1].style.backgroundColor, 
+                fontFamily: state.sentences.items[props.location.params-1].style.fontFamily
+            });
+        } else if(state.user.user.userType === 'writer') {
+            console.log('come from "/MySentences"'); 
+            handleWriter();
+        } else {
+            console.log('get out!'); 
+            setRedirect("/");
+        }
+        
+    }, []); 
+
+    const [sentenceStyle, setSentenceStyle] = useState(sentenceDefaultStyle.style);
+    const [sentenceBody, setSentenceBody] = useState(sentenceDefaultStyle.sentenceBody);
+    const [sentenceId, setSentenceId] = useState(sentenceDefaultStyle.sentenceId);
+    const [writer, setWriter] = useState(false);
+    
+    let tabAction = 0;
+
+    const buySentenceClicked = async () => {
+        const state = store.getState();
+        if(state.user.user.id !== undefined) { 
+            //  await need to save the order to the db 
+            //  redirect to payPal api...
+            console.log(`buy sentence clicked!`);   
+            setRedirect("/");
+        } else { //   if user is not logged in
+            handleAlertClick();
+        }
+    };
+    const saveSentenceClicked = async () => {
+        //  await need to save the sentence to the db if sentence id exist, need to update, else need to create
+        //  return success or failed to the user
+        console.log(`saved sentence clicked!`);
+        console.log(sentenceStyle);
+        console.log(sentenceBody);
+        console.log(sentenceId);
+        // need to add here userId
+        //  set redirect
+        const sentence = {
+            // WriterId: id,
+            sentenceId: 10,
+            sentenceBody: sentenceBody,
+            style: {
+                textColor: sentenceStyle.color,
+                backgroundColor: sentenceStyle.backgroundColor,
+                fontFamily: sentenceStyle.fontFamily
+            }
+        };
+        props.createSentence(sentence);  
+        setRedirect("/");
+    };
     const handleAlertClick = () => {
         setAlertOpen(true);
     };
-
     const handleAlertClose = (event, reason) => {
         if (reason === 'clickaway') {
         return;
@@ -163,80 +207,72 @@ export default function Editor() {
     }; 
     const ChangeTextSize = e => {
         setSentenceStyle({...sentenceStyle, fontSize: `${e}px`, lineHeight: `${e+10}px`});
-        console.log(`sentence style font size: ${sentenceStyle.fontSize}`);
         setOpenFontSize(false);
     };
     const ChangeTextAlign = e => {
         setSentenceStyle({...sentenceStyle, textAlign: `${e}`});
-        console.log(`sentence style text align: ${sentenceStyle.textAlign}`);
         setOpenTextAlign(false);
     };
     const ChangeAlignItems = e => {
         setSentenceStyle({...sentenceStyle, alignItems: `${e}`});
-        console.log(`sentence style text align: ${sentenceStyle.textAlign}`);
         setOpenAlignItems(false);
     };
     const ChangeFontFamily = e => {
         setSentenceStyle({...sentenceStyle, fontFamily: `${e}`});
-        console.log(`sentence style text align: ${sentenceStyle.fontFamily}`);
         setOpenFontFamily(false);
     };   
     const setFontWeight = () => {
-        if(bCounter === 0) {
+        setSentenceStyle({...sentenceStyle, fontWeight: 'normal'});
+    };
+    const setFontWeightBold = () => {
             setSentenceStyle({...sentenceStyle, fontWeight: 'bold'});
-            bCounter = 1;
-        } else {
-            setSentenceStyle({...sentenceStyle, fontWeight: 'normal'});
-            bCounter = 0;
-        }
-        console.log(`sentence style font-weight: ${sentenceStyle.fontWeight}`);
     };
     const setFontStyle = () => {
-        if(iCounter === 0) {
-            setSentenceStyle({...sentenceStyle, fontStyle: 'italic'});
-            iCounter = 1;
-        } else {
-            setSentenceStyle({...sentenceStyle, fontStyle: 'normal'});
-            iCounter = 0;
-        }
-        console.log(`sentence style font-style: ${sentenceStyle.fontStyle}`);
+        setSentenceStyle({...sentenceStyle, fontStyle: 'normal'});
+    };
+    const setFontStyleItalic = () => {
+        setSentenceStyle({...sentenceStyle, fontStyle: 'italic'});
     };
     const setUnderLine = () => {
-        if(uCounter === 0) {
-            setSentenceStyle({...sentenceStyle, textDecoration: 'underline'});
-            uCounter = 1;
-        } else {
-            setSentenceStyle({...sentenceStyle, textDecoration: 'none'});
-            uCounter = 0;
-        }
-        console.log(`sentence style text-decoration: ${sentenceStyle.textDecoration}`);
+        setSentenceStyle({...sentenceStyle, textDecoration: 'underline'});
+    };
+    const setNoUnderLine = () => {
+        setSentenceStyle({...sentenceStyle, textDecoration: 'underline'});
     };
     const changeColor = c => {
-        if(tabValue === 1) {
+        if(tabAction === 1) {
             setSentenceStyle({...sentenceStyle, color: c});
         } else {
             setSentenceStyle({...sentenceStyle, backgroundColor: c});
         }
-        console.log(`tab value: ${tabValue}`);
-        console.log(`color: ${c}`);
     };
     const changeSentenceBody = e => {
-        setSentenceStyle({...sentenceStyle, sentenceBody: e});
-        console.log(`sentence color: ${e}`);
+        setSentenceBody(e);
     };
-
-    
-    //tabs nav
+    const tabClicked = val => {
+        tabAction = val;
+    };
+    const handleTabChange = (event, newValue) => {
+        setTebValue(newValue);
+        if(newValue === 0) {
+            setButtonsGroup(textGroup);
+        } else {
+            setButtonsGroup(colorGroup);
+        }
+    };
     const textGroup = (
         <div className={classes.buttonGroup}>
-            <Button className={classes.button} variant="contained" onClick={e=> setOpenTextAlign(true)}>Horizonal alingment</Button>
-            <Button className={classes.button} variant="contained" onClick={e=> setOpenAlignItems(true)}>Vertical alingment</Button>
-            <Button className={classes.button} variant="contained" onClick={e=> setOpenFontSize(true)}>Font size</Button>
-            <Button className={classes.button} variant="contained" onClick={e=> setOpenFontFamily(true)}>Font family</Button>
-            <Button className={classes.button} variant="contained" onClick={setFontWeight}><b>B</b></Button>
-            <Button className={classes.button} variant="contained" onClick={setFontStyle}><i>I</i></Button>
+            <Button className={classes.button} variant="contained" onClick={()=> setOpenTextAlign(true)}>Horizonal alingment</Button>
+            <Button className={classes.button} variant="contained" onClick={()=> setOpenAlignItems(true)}>Vertical alingment</Button>
+            <Button className={classes.button} variant="contained" onClick={()=> setOpenFontSize(true)}>Font size</Button>
+            <Button className={classes.button} variant="contained" onClick={()=> setOpenFontFamily(true)}>Font family</Button>
+            <Button className={classes.button} variant="contained" onClick={setFontWeightBold}><b>B</b></Button>
+            <Button className={classes.button} variant="contained" onClick={setFontWeight}>B</Button>
+            <Button className={classes.button} variant="contained" onClick={setFontStyleItalic}><i>I</i></Button>
+            <Button className={classes.button} variant="contained" onClick={setFontStyle}>I</Button>
             <Button style={{textDecoration: 'underline'}} className={classes.button} variant="contained" onClick={setUnderLine}>U</Button>
-            {writer && 
+            <Button className={classes.button} variant="contained" onClick={setNoUnderLine}>U</Button>
+            {writer &&
                     <div className={classes.input}>
                     <p>Insert your new inspiration here:</p>
                     <TextField
@@ -250,7 +286,6 @@ export default function Editor() {
         </div>
     );
     const colorGroup = (
-        //  maybe add gradiant
         <div className={classes.colorGroup}>
             <div>Red Colors:</div>
             <Button className={classes.colors} variant="contained" style={{backgroundColor: 'lightsalmon'}} onClick={e=> changeColor('lightsalmon')}>lightsalmon</Button>
@@ -347,50 +382,51 @@ export default function Editor() {
             <Button className={classes.colors} variant="contained" style={{backgroundColor: 'maroon', color: 'white'}} onClick={e=> changeColor('maroon')}>maroon</Button>
         </div>
     );
+
+    
+    const [openFontSize, setOpenFontSize] = useState(false);
+    const [openTextAlign, setOpenTextAlign] = useState(false);
+    const [openAlignItems, setOpenAlignItems] = useState(false);
+    const [openFontFamily, setOpenFontFamily] = useState(false);
+    const [tabValue, setTebValue] = useState(0);
+    const [alertOpen, setAlertOpen] = useState(false);
     const [buttonsGroup, setButtonsGroup] = useState(textGroup);
-    const handleTabChange = (event, newValue) => {
-        if(newValue === 0) {
-            setButtonsGroup(textGroup);
-        } else {
-            setButtonsGroup(colorGroup);
-        }
-        setTebValue(newValue);
-        console.log(`tab value: ${tabValue}`);
-    };
-
-
-  return (
-    <React.Fragment>
-        <div className={classes.heroContent}>
-            <Container maxWidth="sm">
-                <Typography style={{fontFamily: "'Lato', sans-serif"}} component="h2" variant="h4" align="center" color="textPrimary" gutterBottom>
-                    Welcome to our Mighty editor!
-                </Typography>
-            </Container>
-        </div>
-        <Container className={classes.container}>
-            <Paper className={classes.paper}>
-                <Tabs
-                    value={tabValue}
-                    onChange={handleTabChange}
-                    indicatorColor="primary"
-                    variant="scrollable"
-                    scrollButtons="auto"
-                >
-                    <Tab className={classes.tab} label="Text" />
-                    <Tab className={classes.tab} label="Color" />
-                    <Tab className={classes.tab} label="Background color" />
-                </Tabs>
-                {buttonsGroup}
-            </Paper>
-            <div style={sentenceStyle}>
-                {sentenceStyle.sentenceBody}
+    
+    if(redirect !== undefined) {
+        return ( <Redirect to={redirect}/> );
+    }
+    return (
+        <div>
+            <div className={classes.heroContent}>
+                <Container maxWidth="sm">
+                    <Typography style={{fontFamily: "'Lato', sans-serif"}} component="h2" variant="h4" align="center" color="textPrimary" gutterBottom>
+                        Welcome to our Mighty editor!
+                    </Typography>
+                </Container>
             </div>
-        </Container>
-        <div className={classes.finish}>
-        {writer && 
+            <Container className={classes.container}>
+                <Paper className={classes.paper}>
+                    <Tabs
+                        value={tabValue}
+                        onChange={handleTabChange}
+                        indicatorColor="primary"
+                        variant="scrollable"
+                        scrollButtons="auto"
+                    >
+                        <Tab className={classes.tab} label="Text" onClick={e=> tabClicked(0)} />
+                        <Tab className={classes.tab} label="Color" onClick={e=> tabClicked(1)} />
+                        <Tab className={classes.tab} label="Background color" onClick={e=> tabClicked(2)} />
+                    </Tabs>
+                    {buttonsGroup}
+                </Paper>
+                <div style={{...sentenceStyle, padding: '10px', border: '1px dashed', borderRadius: '2%', width: '90%', minHeight: '50vh', display: 'flex'}}>
+                    {sentenceBody}
+                </div>
+            </Container>
+            <div className={classes.finish}>
+            {writer &&
                 <Button
-                    onClick={saveSentenveClicked}
+                    onClick={saveSentenceClicked}
                     variant="contained"
                     color="secondary"
                     className={classes.finishButton}
@@ -398,144 +434,152 @@ export default function Editor() {
                 >
                     Upload now
                 </Button>}
-            <Button
-                onClick={buySentenveClicked}
-                variant="contained"
-                color="secondary"
-                className={classes.finishButton}
-                startIcon={<AddShoppingCartIcon />}
-            >
-                Buy now
-            </Button>
+                <Button
+                    onClick={buySentenceClicked}
+                    variant="contained"
+                    color="secondary"
+                    className={classes.finishButton}
+                    startIcon={<AddShoppingCartIcon />}
+                >
+                    Buy now
+                </Button>
+            </div>
+            <Snackbar open={alertOpen} autoHideDuration={4000} onClose={handleAlertClose}>
+                <Alert onClose={handleAlertClose} severity="warning">
+                    You have to be logged in before making such action!
+                </Alert>
+            </Snackbar>
+            {/* change Font Size section */}
+            <div>
+            <Dialog disableBackdropClick disableEscapeKeyDown open={openFontSize} onClose={e=> setOpenFontSize(false)}>
+                <DialogTitle>select Text Size</DialogTitle>
+                <DialogContent>
+                <form className={classes.form}>
+                    <FormControl className={classes.formControl}>
+                        <InputLabel id="demo-dialog-select-label">{sentenceStyle.fontSize}</InputLabel>
+                        <Select labelId="demo-dialog-select-label" id="demo-dialog-select" value={sentenceStyle.textSize} onChange={e=> ChangeTextSize(e.target.value)} input={<Input />}>
+                            <MenuItem value="">
+                                <em>None</em>
+                            </MenuItem>
+                            <MenuItem value={40}>40 px</MenuItem>
+                            <MenuItem value={44}>44 px</MenuItem>
+                            <MenuItem value={48}>48 px</MenuItem>
+                            <MenuItem value={52}>52 px</MenuItem>
+                            <MenuItem value={56}>56 px</MenuItem>
+                            <MenuItem value={60}>60 px</MenuItem>
+                        </Select>
+                    </FormControl>
+                </form>
+                </DialogContent>
+                <DialogActions>
+                <Button className={classes.tab} onClick={e=> setOpenFontSize(false)} color="primary">
+                    Cancel
+                </Button>
+                </DialogActions>
+            </Dialog>
+            </div>
+            {/* change Font Size section */}
+            {/* change Text Alignment section */}
+            <div>
+            <Dialog disableBackdropClick disableEscapeKeyDown open={openTextAlign} onClose={e=> setOpenTextAlign(false)}>
+                <DialogTitle>select Text Alignment</DialogTitle>
+                <DialogContent>
+                <form className={classes.form}>
+                    <FormControl className={classes.formControl}>
+                        <InputLabel id="demo-dialog-select-label">{sentenceStyle.textAlign}</InputLabel>
+                        <Select labelId="demo-dialog-select-label" id="demo-dialog-select" value={sentenceStyle.textAlign} onChange={e=> ChangeTextAlign(e.target.value)} input={<Input />}>
+                            <MenuItem value="">
+                                <em>None</em>
+                            </MenuItem>
+                            <MenuItem value={'left'}>left</MenuItem>
+                            <MenuItem value={'justify'}>justify</MenuItem>
+                            <MenuItem value={'center'}>center</MenuItem>
+                            <MenuItem value={'right'}>right</MenuItem>
+                        </Select>
+                    </FormControl>
+                </form>
+                </DialogContent>
+                <DialogActions>
+                <Button className={classes.tab} onClick={e=> setOpenTextAlign(false)} color="primary">
+                    Cancel
+                </Button>
+                </DialogActions>
+            </Dialog>
+            </div>
+            {/* change Text Alignment section */}
+            {/* change items Alignment section */}
+            <div>
+            <Dialog disableBackdropClick disableEscapeKeyDown open={openAlignItems} onClose={e=> setOpenAlignItems(false)}>
+                <DialogTitle>select Text Alignment</DialogTitle>
+                <DialogContent>
+                <form className={classes.form}>
+                    <FormControl className={classes.formControl}>
+                        <InputLabel id="demo-dialog-select-label">{sentenceStyle.alignItems}</InputLabel>
+                        <Select labelId="demo-dialog-select-label" id="demo-dialog-select" value={sentenceStyle.textAlign} onChange={e=> ChangeAlignItems(e.target.value)} input={<Input />}>
+                            <MenuItem value="">
+                                <em>None</em>
+                            </MenuItem>
+                            <MenuItem value={'start'}>start</MenuItem>
+                            <MenuItem value={'center'}>center</MenuItem>
+                            <MenuItem value={'flex-end'}>end</MenuItem>
+                        </Select>
+                    </FormControl>
+                </form>
+                </DialogContent>
+                <DialogActions>
+                <Button className={classes.tab} onClick={e=> setOpenAlignItems(false)} color="primary">
+                    Cancel
+                </Button>
+                </DialogActions>
+            </Dialog>
+            </div>
+            {/* change items Alignment section */}
+            {/* change font family section */}
+            <div>
+            <Dialog disableBackdropClick disableEscapeKeyDown open={openFontFamily} onClose={e=> setOpenFontFamily(false)}>
+                <DialogTitle>select Text Alignment</DialogTitle>
+                <DialogContent>
+                <form className={classes.form}>
+                    <FormControl className={classes.formControl}>
+                        <InputLabel id="demo-dialog-select-label">{sentenceStyle.fontFamily}</InputLabel>
+                        <Select labelId="demo-dialog-select-label" id="demo-dialog-select" value={sentenceStyle.textAlign} onChange={e=> ChangeFontFamily(e.target.value)} input={<Input />}>
+                            <MenuItem value="">
+                                <em>None</em>
+                            </MenuItem>
+                            <MenuItem style={{fontFamily: 'Georgia, serif'}} value={'Georgia, serif'}>Georgia Example Text</MenuItem>
+                            <MenuItem style={{fontFamily: '"Palatino Linotype", "Book Antiqua", Palatino, serif'}} value={'"Palatino Linotype", "Book Antiqua", Palatino, serif'}>Palatino Example Text</MenuItem>
+                            <MenuItem style={{fontFamily: 'Arial, Helvetica, sans-serif'}} value={'Arial, Helvetica, sans-serif'}>Arial Example Text</MenuItem>
+                            <MenuItem style={{fontFamily: '"Courier New", Courier, monospace'}} value={'"Courier New", Courier, monospace'}>Courier Example Text</MenuItem>
+                            <MenuItem style={{fontFamily: '"Lucida Console", Monaco, monospace'}} value={'"Lucida Console", Monaco, monospace'}>Lucida Example Text</MenuItem>
+                            <MenuItem style={{fontFamily: 'Impact, Charcoal, sans-serif'}} value={'Impact, Charcoal, sans-serif'}>Impact Example Text</MenuItem>
+                            <MenuItem style={{fontFamily: '"Trebuchet MS", Helvetica, sans-serif'}} value={'"Trebuchet MS", Helvetica, sans-serif'}>Trebuchet Example Text</MenuItem>
+                            <MenuItem style={{fontFamily: 'Verdana, Geneva, sans-serif'}} value={'Verdana, Geneva, sans-serif'}>Verdana Example Text</MenuItem>
+                            <MenuItem style={{fontFamily: '"Comic Sans MS", cursive, sans-serif'}} value={'"Comic Sans MS", cursive, sans-serif'}>Comic Example Text</MenuItem>
+                        </Select>
+                    </FormControl>
+                </form>
+                </DialogContent>
+                <DialogActions>
+                <Button className={classes.tab} onClick={e=> setOpenFontFamily(false)} color="primary">
+                    Cancel
+                </Button>
+                </DialogActions>
+            </Dialog>
+            </div>
+            {/* change font family section */}
         </div>
-        <Snackbar open={alertOpen} autoHideDuration={6000} onClose={handleAlertClose}>
-            <Alert onClose={handleAlertClose} severity="warning">
-                You have to be logged in before making such action!
-            </Alert>
-        </Snackbar>
-
-        {/* change Font Size section */}
-        <div>
-        <Dialog disableBackdropClick disableEscapeKeyDown open={openFontSize} onClose={e=> setOpenFontSize(false)}>
-            <DialogTitle>select Text Size</DialogTitle>
-            <DialogContent>
-            <form className={classes.form}>
-                <FormControl className={classes.formControl}>
-                    <InputLabel id="demo-dialog-select-label">{sentenceStyle.fontSize}</InputLabel>
-                    <Select labelId="demo-dialog-select-label" id="demo-dialog-select" value={sentenceStyle.textSize} onChange={e=> ChangeTextSize(e.target.value)} input={<Input />}>
-                        <MenuItem value="">
-                            <em>None</em>
-                        </MenuItem>
-                        <MenuItem value={40}>40 px</MenuItem>
-                        <MenuItem value={44}>44 px</MenuItem>
-                        <MenuItem value={48}>48 px</MenuItem>
-                        <MenuItem value={52}>52 px</MenuItem>
-                        <MenuItem value={56}>56 px</MenuItem>
-                        <MenuItem value={60}>60 px</MenuItem>
-                    </Select>
-                </FormControl>
-            </form>
-            </DialogContent>
-            <DialogActions>
-            <Button className={classes.tab} onClick={e=> setOpenFontSize(false)} color="primary">
-                Cancel
-            </Button>
-            </DialogActions>
-        </Dialog>
-        </div>
-        {/* change Font Size section */}
-        {/* change Text Alignment section */}
-        <div>
-        <Dialog disableBackdropClick disableEscapeKeyDown open={openTextAlign} onClose={e=> setOpenTextAlign(false)}>
-            <DialogTitle>select Text Alignment</DialogTitle>
-            <DialogContent>
-            <form className={classes.form}>
-                <FormControl className={classes.formControl}>
-                    <InputLabel id="demo-dialog-select-label">{sentenceStyle.textAlign}</InputLabel>
-                    <Select labelId="demo-dialog-select-label" id="demo-dialog-select" value={sentenceStyle.textAlign} onChange={e=> ChangeTextAlign(e.target.value)} input={<Input />}>
-                        <MenuItem value="">
-                            <em>None</em>
-                        </MenuItem>
-                        <MenuItem value={'left'}>left</MenuItem>
-                        <MenuItem value={'justify'}>justify</MenuItem>
-                        <MenuItem value={'center'}>center</MenuItem>
-                        <MenuItem value={'right'}>right</MenuItem>
-                    </Select>
-                </FormControl>
-            </form>
-            </DialogContent>
-            <DialogActions>
-            <Button className={classes.tab} onClick={e=> setOpenTextAlign(false)} color="primary">
-                Cancel
-            </Button>
-            </DialogActions>
-        </Dialog>
-        </div>
-        {/* change Text Alignment section */}
-        {/* change items Alignment section */}
-        <div>
-        <Dialog disableBackdropClick disableEscapeKeyDown open={openAlignItems} onClose={e=> setOpenAlignItems(false)}>
-            <DialogTitle>select Text Alignment</DialogTitle>
-            <DialogContent>
-            <form className={classes.form}>
-                <FormControl className={classes.formControl}>
-                    <InputLabel id="demo-dialog-select-label">{sentenceStyle.alignItems}</InputLabel>
-                    <Select labelId="demo-dialog-select-label" id="demo-dialog-select" value={sentenceStyle.textAlign} onChange={e=> ChangeAlignItems(e.target.value)} input={<Input />}>
-                        <MenuItem value="">
-                            <em>None</em>
-                        </MenuItem>
-                        <MenuItem value={'start'}>start</MenuItem>
-                        <MenuItem value={'center'}>center</MenuItem>
-                        <MenuItem value={'flex-end'}>end</MenuItem>
-                    </Select>
-                </FormControl>
-            </form>
-            </DialogContent>
-            <DialogActions>
-            <Button className={classes.tab} onClick={e=> setOpenAlignItems(false)} color="primary">
-                Cancel
-            </Button>
-            </DialogActions>
-        </Dialog>
-        </div>
-        {/* change items Alignment section */}
-        {/* change font family section */}
-        <div>
-        <Dialog disableBackdropClick disableEscapeKeyDown open={openFontFamily} onClose={e=> setOpenFontFamily(false)}>
-            <DialogTitle>select Text Alignment</DialogTitle>
-            <DialogContent>
-            <form className={classes.form}>
-                <FormControl className={classes.formControl}>
-                    <InputLabel id="demo-dialog-select-label">{sentenceStyle.fontFamily}</InputLabel>
-                    <Select labelId="demo-dialog-select-label" id="demo-dialog-select" value={sentenceStyle.textAlign} onChange={e=> ChangeFontFamily(e.target.value)} input={<Input />}>
-                        <MenuItem value="">
-                            <em>None</em>
-                        </MenuItem>
-                        <MenuItem style={{fontFamily: 'Georgia, serif'}} value={'Georgia, serif'}>Georgia Example Text</MenuItem>
-                        <MenuItem style={{fontFamily: '"Palatino Linotype", "Book Antiqua", Palatino, serif'}} value={'"Palatino Linotype", "Book Antiqua", Palatino, serif'}>Palatino Example Text</MenuItem>
-                        <MenuItem style={{fontFamily: 'Arial, Helvetica, sans-serif'}} value={'Arial, Helvetica, sans-serif'}>Arial Example Text</MenuItem>
-                        <MenuItem style={{fontFamily: '"Courier New", Courier, monospace'}} value={'"Courier New", Courier, monospace'}>Courier Example Text</MenuItem>
-                        <MenuItem style={{fontFamily: '"Lucida Console", Monaco, monospace'}} value={'"Lucida Console", Monaco, monospace'}>Lucida Example Text</MenuItem>
-                        <MenuItem style={{fontFamily: 'Impact, Charcoal, sans-serif'}} value={'Impact, Charcoal, sans-serif'}>Impact Example Text</MenuItem>
-                        <MenuItem style={{fontFamily: '"Trebuchet MS", Helvetica, sans-serif'}} value={'"Trebuchet MS", Helvetica, sans-serif'}>Trebuchet Example Text</MenuItem>
-                        <MenuItem style={{fontFamily: 'Verdana, Geneva, sans-serif'}} value={'Verdana, Geneva, sans-serif'}>Verdana Example Text</MenuItem>
-                        <MenuItem style={{fontFamily: '"Comic Sans MS", cursive, sans-serif'}} value={'"Comic Sans MS", cursive, sans-serif'}>Comic Example Text</MenuItem>
-                    </Select>
-                </FormControl>
-            </form>
-            </DialogContent>
-            <DialogActions>
-            <Button className={classes.tab} onClick={e=> setOpenFontFamily(false)} color="primary">
-                Cancel
-            </Button>
-            </DialogActions>
-        </Dialog>
-        </div>
-        {/* change font family section */}
-
-    </React.Fragment>
-  );
+    );
 };
+
+const mapStateToProps = state => ({
+    sentences: state.sentences.items
+});
+
+export default connect(
+    mapStateToProps, 
+    { createSentence }
+)(Editor);
+
 
 
 

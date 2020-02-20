@@ -1,8 +1,6 @@
-import React, { useState } from 'react';
-import {IconButton, Button, Card, CardActions, CardContent, CardMedia, Grid, Typography, makeStyles, Container } from '@material-ui/core';
-import AddShoppingCartIcon from '@material-ui/icons/AddShoppingCart';
-import EditOutlinedIcon from '@material-ui/icons/EditOutlined';
-import FavoriteBorderTwoToneIcon from '@material-ui/icons/FavoriteBorderTwoTone';
+import React from 'react';
+import { Typography, makeStyles, Container } from '@material-ui/core';
+import Sentences from './Sentences';
 
 
 const useStyles = makeStyles(theme => ({
@@ -30,14 +28,13 @@ const useStyles = makeStyles(theme => ({
     },
 }));
 
-const cards = [1, 2, 3, 4, 5]; 
 
 export default function Catalog() {
     const classes = useStyles();
-    const [like, setLike] = useState(true);
+    // const [like, setLike] = useState(true);
 
     return (
-        <React.Fragment>
+        <div>
             <div className={classes.heroContent}>
                 <Container maxWidth="sm">
                     <Typography component="h1" variant="h2" align="center" color="textPrimary" gutterBottom>
@@ -51,40 +48,11 @@ export default function Catalog() {
                     </Typography>
                 </Container>
             </div>
-            <Container className={classes.cardGrid} maxWidth="md">
-                <Grid container spacing={4}>
-                    {cards.map(card => (
-                        <Grid item key={card} xs={12} sm={6} md={4}>
-                            <Card className={classes.card}>
-                                <CardMedia
-                                    className={classes.cardMedia}
-                                    image="https://source.unsplash.com/random"
-                                    title="Image title"
-                                />
-                                <CardActions style={{display: 'flex', justifyContent: 'space-between',}}>
-                                    {/* that icon should the sentence content to user liked list [if we decide to make that list] */}
-                                    <IconButton color="primary" aria-label="add to shopping cart" onClick={e=> setLike(!like)}>
-                                        {like ? (
-                                            <FavoriteBorderTwoToneIcon style={{ color: 'red' }}/>
-                                        ) : (
-                                            <FavoriteBorderTwoToneIcon style={{ color: 'green' }}/>
-                                        )}
-                                    </IconButton>
-                                    {/* that icon should move to editor page with the sentence content */}
-                                    <IconButton color="primary" aria-label="add to shopping cart">
-                                        <EditOutlinedIcon />
-                                    </IconButton>
-                                    {/* that icon should move to sentence content to the user cart */}
-                                    <IconButton color="primary" aria-label="add to shopping cart">
-                                        <AddShoppingCartIcon />
-                                    </IconButton>
-                                </CardActions>
-                            </Card>
-                        </Grid>
-                    ))}
-                </Grid>
-            </Container>
-        </React.Fragment>
+            <div>
+                <hr />
+                <Sentences />
+            </div>
+        </div>
     );
 }
 

@@ -10,20 +10,8 @@ import Catalog from '../Components/CatalogPage/Catalog';
 import Editor from '../Components/SentenceEditor/Editor';
 import MyOrders from '../Components/UsersPages/MyOrders';
 import MySentences from '../Components/UsersPages/MySentences';
-import ProfilePage from '../Components/LoginView/ProfilePage';
 import Header from '../Components/Header';
 import Footer from '../Components/Footer';
-
-// const PrivateRoute = ({ component: Component, ...rest }) => (
-//     <LoggedInUserContext.Consumer>
-//         {context => ( 
-//             <Route {...rest} render={props =>
-//                 context.user_id ? (
-//                     <Component {...props} />
-//                 ) : (<LoginView {...props} />) }
-//         />)}
-//     </LoggedInUserContext.Consumer>
-// );
 
 const InspirgramRouter = ({}) => {
     return <BrowserRouter basename='/'>
@@ -35,7 +23,6 @@ const InspirgramRouter = ({}) => {
                 <Route exact path="/Editor" component={Editor}/>
                 <Route exact path="/MyOrders" component={MyOrders}/>
                 <Route exact path="/MySentences" component={MySentences}/>
-                <Route exact path="/ProfilePage" component={ProfilePage}/>
                 <Footer />
             </App>
         </MuiThemeProvider>

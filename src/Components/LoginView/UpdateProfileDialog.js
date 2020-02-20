@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { makeStyles } from '@material-ui/core/styles';
-import {Grid, Link, Checkbox, FormControlLabel, Button, TextField, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle }  from '@material-ui/core';
+import {Snackbar, Checkbox, FormControlLabel, Button, TextField, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle }  from '@material-ui/core';
+import store from '../../redux/store';
 
 
 const useStyles = makeStyles(theme => ({
@@ -21,7 +22,9 @@ const useStyles = makeStyles(theme => ({
     },
 }));
 
-export default function LoginDialog(props) {
+
+
+export default function UpdateProfileDialog(props) {
     const classes = useStyles();
     const [name, setName] = useState(undefined);
     const [email, setEmail] = useState(undefined);
@@ -29,21 +32,24 @@ export default function LoginDialog(props) {
     const [writer, setWriter] = useState(false);
     const [credentials, setCredentials] = useState(undefined);
     
-    const {open, handleClose, authUser, changeDialog } = props;
+    const {open, handleUpdateClose } = props;
     
     const incorectCredentials = (
         <div style={{color: 'red', margin: '0px auto',}}>
-            Sign-up Failed, Please try again
+            there is a problem with your credentials, Please try again
         </div>
     );
     
-    const handleSignup = async() => {
+    const handleSubmit = async() => {
         console.log(`name: ${name}, email: ${email}, password: ${password}, writer: ${writer}`);
-        //  api call to create user using name & email & password & writer
+        const state = store.getState();
+        console.log(`id: ${state.user.user.id}`);
+        handleUpdateClose();
+        //  api call to update user using name & email & password & writer & userId
         //  put an access token in local storege
         // put an access token in local storege
         if(false) { // if user authenticate
-            authUser();
+            
         } else { //  if user dosent exist
             setCredentials(incorectCredentials);
         }
@@ -51,11 +57,8 @@ export default function LoginDialog(props) {
     const handleWriter = () => {
         setWriter(!writer);
     };
-    const backToLogin = () => {
-        changeDialog();
-    };
 
-    return <Dialog className={classes.dialog} open={open} onClose={handleClose} aria-labelledby="form-dialog-title">
+    return <Dialog className={classes.dialog} open={open} onClose={handleUpdateClose} aria-labelledby="form-dialog-title">
         <DialogTitle id="form-dialog-title" className={classes.title}>Inspirgram Log-in</DialogTitle>
         <DialogTitle id="form-dialog-title" className={classes.title}>
             <svg version="1.0" xmlns="http://www.w3.org/2000/svg"
@@ -72,7 +75,7 @@ export default function LoginDialog(props) {
         <DialogContent>
             {credentials}
             <DialogContentText>
-                Please Fill in details for Sign-up
+                Please Fill your details
             </DialogContentText>
             <TextField
                 margin="normal"
@@ -110,16 +113,9 @@ export default function LoginDialog(props) {
           />
         </DialogContent>
         <DialogActions style={{marginTop: '2vh'}}>
-            <Button type="submit" fullWidth variant="contained" color="primary" onClick={handleSignup}>
-                Sign up
+            <Button type="submit" fullWidth variant="contained" color="primary" onClick={handleSubmit}>
+                Submit
             </Button>
-        </DialogActions>
-        <DialogActions style={{marginTop: '1vh', marginBottom: '2vh'}}>
-            <Grid item xs>
-                <Link component="button" variant="body2" onClick={backToLogin}>
-                    Back to log-in
-                </Link>
-            </Grid>
         </DialogActions>
     </Dialog>
 };

@@ -1,0 +1,3 @@
+export const FETCH_SENTENCES = 'FETCH_SENTENCES';
+export const NEW_SENTENCE = 'NEW_SENTENCE';
+export const CREATE_USER = 'CREATE_USER';

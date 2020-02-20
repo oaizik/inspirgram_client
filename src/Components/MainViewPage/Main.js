@@ -5,6 +5,7 @@ import Grid from '@material-ui/core/Grid';
 import Typography from '@material-ui/core/Typography';
 import { makeStyles } from '@material-ui/core/styles';
 import Button from '@material-ui/core/Button';
+import { NavLink } from 'react-router-dom';
 
 const useStyles = makeStyles(theme => ({
     root: {
@@ -88,7 +89,12 @@ export default function SignInSide() {
                     </b></p>
                     <div className={classes.seperator}></div>
                     <Grid item xs={3}>
+                    <NavLink to = {{
+                        pathname:'/Editor',
+                        params: -1}}
+                    >
                         <Button className={classes.button} variant="outlined" onClick={gotoEdit}>Goto Edit</Button>
+                    </NavLink>
                     </Grid>
                 </div>
             </Grid>
