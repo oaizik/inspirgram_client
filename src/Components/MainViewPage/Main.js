@@ -14,7 +14,7 @@ const useStyles = makeStyles(theme => ({
         width: '97%',
     },
     image: {
-        backgroundImage: 'linear-gradient(to bottom right, pink , white , pink)',
+        backgroundImage: 'linear-gradient(45deg, #dcdcdc 30%, #696969 90%)',
         backgroundColor:
             theme.palette.type === 'dark' ? theme.palette.grey[900] : theme.palette.grey[50],
         backgroundSize: 'cover',
@@ -29,7 +29,7 @@ const useStyles = makeStyles(theme => ({
         margin: '10px',
     },
     textGrid: {
-        backgroundImage: 'linear-gradient(to bottom right, lemonchiffon , white , lemonchiffon)',
+        backgroundImage: 'linear-gradient(45deg, #f8f8ff 30%, #dcdcdc 90%)',
     },
     paper: {
         margin: theme.spacing(8, 4),
@@ -53,9 +53,10 @@ const useStyles = makeStyles(theme => ({
         margin: '10vh',
     },
     button: {
-        backgroundImage: 'linear-gradient(to bottom right, pink , white , pink)',
+        backgroundImage: 'linear-gradient(45deg, #dcdcdc 30%, #696969 90%)',
         textTransform: 'initial',
         width: '20vh',
+        fontWeight: 700,
     },
 }));
 
@@ -92,6 +93,7 @@ export default function SignInSide() {
                     <NavLink to = {{
                         pathname:'/Editor',
                         params: -1}}
+                        style={{ textDecoration: 'none '}}
                     >
                         <Button className={classes.button} variant="outlined" onClick={gotoEdit}>Goto Edit</Button>
                     </NavLink>

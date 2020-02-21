@@ -4,12 +4,8 @@ import {Link, Grid, Button, TextField, Dialog, DialogActions, DialogContent, Dia
 import FacebookLogin from 'react-facebook-login';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faFacebook } from '@fortawesome/free-brands-svg-icons';
-
-//
 import { connect } from 'react-redux';
 import { createUser } from '../../redux/actions/userActions';
-//
-
 
 const useStyles = makeStyles(theme => ({
     dialog: {
@@ -66,6 +62,7 @@ const LoginDialog = props => {
     
     const handleLogIn = async() => {
         console.log(`email: ${email}, password: ${password}`);
+        //  @@@@@@@@@@@@@@@@@@@ API CALL @@@@@@@@@@@@@@@@@@@@@  
         //  api call to authenticate user using email & password
         //  put an access token in local storege
         const user = {
@@ -101,9 +98,6 @@ const LoginDialog = props => {
             //     name: facebookResponse.name,
             //     facebook_id: facebookResponse.id,
             // }
-            console.log('the user is authenticate by facebook');
-            
-            console.log(`facebook email: ${facebookResponse.email}`);
             // put an access token in local storege
             authUser();
         } catch(e) {

@@ -39,6 +39,7 @@ export default function LoginDialog(props) {
     
     const handleSignup = async() => {
         console.log(`name: ${name}, email: ${email}, password: ${password}, writer: ${writer}`);
+        //  @@@@@@@@@@@@@@@@@@@ API CALL @@@@@@@@@@@@@@@@@@@@@  
         //  api call to create user using name & email & password & writer
         //  put an access token in local storege
         // put an access token in local storege

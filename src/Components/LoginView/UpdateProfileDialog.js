@@ -45,6 +45,7 @@ export default function UpdateProfileDialog(props) {
         const state = store.getState();
         console.log(`id: ${state.user.user.id}`);
         handleUpdateClose();
+        //  @@@@@@@@@@@@@@@@@@@ API CALL @@@@@@@@@@@@@@@@@@@@@  
         //  api call to update user using name & email & password & writer & userId
         //  put an access token in local storege
         // put an access token in local storege

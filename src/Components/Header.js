@@ -16,7 +16,7 @@ import store from '../redux/store';;
 
 const useStyles = makeStyles(theme => ({
     root: {
-        backgroundImage: 'linear-gradient(to bottom right, pink , white , pink)',
+        backgroundImage: 'linear-gradient(45deg, #dcdcdc 30%, #696969 90%)',
         marginBottom: '1vh',
     },
     toolbar: {
@@ -146,20 +146,20 @@ export default function Header(props) {
             {isWriter &&
             <Tooltip title="my sentences" aria-label="my sentences" >
                 <NavLink exact to="/MySentences">
-                    <AssignmentIcon style={{color: 'dimgray'}}/>
+                    <AssignmentIcon style={{color: 'black'}}/>
                 </NavLink>
             </Tooltip>}
             <Tooltip title="my orders" aria-label="my orders" >
                 <NavLink exact to="/MyOrders">
-                    <LocalMallOutlinedIcon style={{color: 'dimgray'}}/>
+                    <LocalMallOutlinedIcon style={{color: 'black'}}/>
                 </NavLink>
             </Tooltip>
             <Tooltip title="update profile" aria-label="update profile" onClick={handleUpdate}>
-                    <AccountCircleOutlinedIcon style={{color: 'dimgray', marginBottom: '5px'}}/>
+                    <AccountCircleOutlinedIcon style={{color: 'black', marginBottom: '5px'}}/>
             </Tooltip>
             <Tooltip title="log-out" aria-label="log-out" >
                 <NavLink exact to="/" onClick={setLogOut}>
-                    <HighlightOffIcon style={{color: 'dimgray'}}/>
+                    <HighlightOffIcon style={{color: 'black'}}/>
                 </NavLink>
             </Tooltip>
         </div>

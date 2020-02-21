@@ -3,6 +3,9 @@ import { NavLink } from 'react-router-dom';
 import { Button, Typography, makeStyles, Container, IconButton, Tooltip } from '@material-ui/core';
 import DeleteIcon from '@material-ui/icons/Delete';
 import EditOutlinedIcon from '@material-ui/icons/EditOutlined';
+import PaymentIcon from '@material-ui/icons/Payment';
+import { connect } from 'react-redux';
+import { fetchSentences } from '../../redux/actions/sentenceActions';
 import store from '../../redux/store';
 
 const useStyles = makeStyles(theme => ({
@@ -36,10 +39,17 @@ const useStyles = makeStyles(theme => ({
     addbutton: {
         textTransform: 'initial',
         color: 'black',
+        margin: '0px auto',
+        textDecoration: 'none',
+        fontWeight: 'bold',
+    },
+    orders: {
+        marginTop: '0px',
+        marginLeft: '10px',
     },
 }));
 
-export default function MySentences() {
+const MySentences = props => {
     const classes = useStyles();
     const state = store.getState();
     const [info, setInfo] = useState(store.getState());
@@ -48,18 +58,18 @@ export default function MySentences() {
     const [id, setId] = useState(1);
 
     const deleteClicked = sentenceId => {
+        //  @@@@@@@@@@@@@@@@@@@ API CALL @@@@@@@@@@@@@@@@@@@@@  
         //delete sentence
         //sentence id = sentenceId
         //user id = id
     };
 
     useEffect(() => { 
-        console.log('here');
-        console.log(`info.sentences.items: ${info.sentences.items}`);
+        if(info.sentences.items.length === 0) {
+            props.fetchSentences();
+        };
         setSentences(info.sentences.items);
-        console.log(`sentences: ${sentences}`);
         setId(info.user.user.id);
-        console.log(`id: ${id}`);
         if(sentences !== undefined) {
             const empty = [];
             sentences.forEach(function(obj){
@@ -76,9 +86,10 @@ export default function MySentences() {
                                 pathname:'/Editor',
                                 params: sentence.sentenceId}}
                             >
-                                <EditOutlinedIcon style={{ color: 'gray', marginTop: '10px' }} />
+                                <EditOutlinedIcon style={{ color: 'gray', marginTop: '15px', marginLeft: '8px' }} />
                             </NavLink>
                         </Tooltip>
+                        <div className={classes.orders}><PaymentIcon style={{ color: 'gray', marginTop: '15px' }} />{sentence.numOfOrders}</div>
                         <Tooltip title="buy now" aria-label="buy now" >
                             <IconButton aria-label="add to shopping cart" onClick={() => deleteClicked(sentence.sentenceId)} >
                                 <DeleteIcon style={{ color: 'gray' }} />
@@ -101,9 +112,9 @@ export default function MySentences() {
                     <Typography variant="h5" align="center" color="textSecondary" paragraph>
                         Inspirgram team appriciate your contribution to the inspirgram comunity
                     </Typography>
-                    {/* <NavLink to = {{pathname:'/Editor'}}>
+                    <NavLink to = {{pathname:'/Editor'}}>
                         <Button variant="outlined" className={classes.addbutton} >Add New Sentence</Button>
-                    </NavLink> */}
+                    </NavLink>
                 </Container>
             </div>
             <div className={classes.sentencescontainer}>
@@ -112,3 +123,11 @@ export default function MySentences() {
         </div>
     )
 };
+
+const mapStateToProps = state => ({
+    sentences: state.sentences.items,
+});
+
+export default connect(mapStateToProps, { fetchSentences })(MySentences);
+
+

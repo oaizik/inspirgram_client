@@ -12,39 +12,18 @@ import store from '../../redux/store';
 class Sentences extends Component {
 
     componentDidMount() {
-        console.log('mounting');
         const state = store.getState();
-        if(state.sentences.items.length !== 0) {
-            console.log('already fetched');
-        } else {
-            console.log('fetcing');
+        if(state.sentences.items.length === 0) {
             this.props.fetchSentences();
         }
-        if(Object.keys(state.sentences.item).length === 0) {
-            console.log('nada');
-        } else {
-            console.log('adding new item');
-            this.props.sentences.unshift(state.sentences.item);
-        }
-    };
-    
-    
-    componentWillReceiveProps(nextProps) {
-        if (nextProps.newSentence) {
-            this.props.sentences.unshift(nextProps.newSentence);
-        };
     };
 
     likeClicked(sentenceId) {
         console.log(`${sentenceId}`);
     };
 
-    editClicked(sentenceId) {
-        //  need to move to editor page and passing the sentence id
-        console.log(`${sentenceId}`);
-    };
-
     buyClicked(sentenceId) {
+        //  @@@@@@@@@@@@@ API CALL @@@@@@@@@@@@@@@
         //  need to make order of sentence id to the client
         console.log(`${sentenceId}`);
     };

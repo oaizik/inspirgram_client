@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { makeStyles } from '@material-ui/core/styles';
 import CssBaseline from '@material-ui/core/CssBaseline';
 import Grid from '@material-ui/core/Grid';
@@ -6,6 +6,10 @@ import Container from '@material-ui/core/Container';
 import MainFeaturedPost from './MainFeaturedPost';
 import FeaturedPost from './FeaturedPost';
 import Main from './Main';
+
+import { connect } from 'react-redux';
+import { fetchSentences } from '../../redux/actions/sentenceActions';
+import store from '../../redux/store';
 
 const useStyles = makeStyles(theme => ({
     mainGrid: {
@@ -39,8 +43,16 @@ const featuredPosts = [
     },
 ];
 
-export default function MainView() {
+const MainView = props => {
     const classes = useStyles();
+
+    useEffect(() => { 
+        props.fetchSentences();
+        const state = store.getState();
+        if(Object.keys(state.sentences.item).length !== 0) {
+            this.props.sentences.unshift(state.sentences.item);
+        };
+    }, []);
 
     return (
         <React.Fragment>
@@ -60,4 +72,8 @@ export default function MainView() {
             </Container>
         </React.Fragment>
     );
-}
+};
+const mapStateToProps = state => ({
+    sentences: state.sentences.items,
+});
+export default connect(mapStateToProps, { fetchSentences })(MainView);

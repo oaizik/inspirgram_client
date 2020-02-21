@@ -4,7 +4,6 @@ import AddShoppingCartIcon from '@material-ui/icons/AddShoppingCart';
 import CloudUploadIcon from '@material-ui/icons/CloudUpload';
 import MuiAlert from '@material-ui/lab/Alert';
 import { Redirect } from 'react-router'
-
 import { connect } from 'react-redux';
 import { createSentence } from '../../redux/actions/sentenceActions';
 import store from '../../redux/store';
@@ -51,8 +50,7 @@ const useStyles = makeStyles(theme => ({
     button: {
         textTransform: 'initial',
         margin: '10px 10px 10px 10px',
-        background: 'linear-gradient(45deg, #FE6B8B 30%, #FF8E53 90%)',
-        boxShadow: '0 3px 5px 2px rgba(255, 105, 135, .3)',
+        background: 'linear-gradient(45deg, #dcdcdc 30%, #696969 90%)',
     },
     formControl: {
         margin: theme.spacing(1),
@@ -66,8 +64,6 @@ const useStyles = makeStyles(theme => ({
     },
     tab: {
         textTransform: 'initial',
-        color: '#c71585',
-        background: 'linear-gradient(45deg, #c71585 5%, white 10%)',
     },
     input: {
         margin: '10% auto',
@@ -78,7 +74,7 @@ const useStyles = makeStyles(theme => ({
         width: '95%',
         height: '20vh',
         fontFamily: '"Lucida Console", Monaco, monospace',
-        background: 'linear-gradient(45deg, #FE6B8B 30%, #FF8E53 90%)',
+        background: 'linear-gradient(45deg, #dcdcdc 30%, #696969 90%)',
         [theme.breakpoints.down(950)]: {
             width: '99%',
             marginTop: '5%',
@@ -128,17 +124,24 @@ const sentenceDefaultStyle = {
 const Editor = props => {
     const classes = useStyles();
     const [redirect, setRedirect] = useState(undefined);
+    const [writer, setWriter] = useState(false);
     const handleWriter = () => {
         setWriter(true);
+        console.log('here2');
         setSentenceBody('please enter your creation in the input field');
+    };
+
+    const handleWriterEdit = () => {
+        setWriter(true);
+        console.log('here3');
     };
 
     useEffect(() => {
         const state = store.getState();
         if(props.location.params === -1) {
-            console.log('come from "/"');
+            
         } else if(props.location.params) {   
-            console.log('come from "/Catalog"');      
+            console.log(props.location.params);
             setSentenceId(state.sentences.items[props.location.params-1].sentenceId);
             setSentenceBody(state.sentences.items[props.location.params-1].sentenceBody);
             setSentenceStyle({...sentenceStyle, 
@@ -146,26 +149,27 @@ const Editor = props => {
                 backgroundColor: state.sentences.items[props.location.params-1].style.backgroundColor, 
                 fontFamily: state.sentences.items[props.location.params-1].style.fontFamily
             });
+            if(state.user.user.userType === 'writer') {
+                handleWriterEdit();
+            } else {
+            }
         } else if(state.user.user.userType === 'writer') {
-            console.log('come from "/MySentences"'); 
             handleWriter();
         } else {
-            console.log('get out!'); 
             setRedirect("/");
         }
         
-    }, []); 
+    }, [writer]); 
 
     const [sentenceStyle, setSentenceStyle] = useState(sentenceDefaultStyle.style);
     const [sentenceBody, setSentenceBody] = useState(sentenceDefaultStyle.sentenceBody);
     const [sentenceId, setSentenceId] = useState(sentenceDefaultStyle.sentenceId);
-    const [writer, setWriter] = useState(false);
-    
     let tabAction = 0;
 
     const buySentenceClicked = async () => {
         const state = store.getState();
         if(state.user.user.id !== undefined) { 
+            //  @@@@@@@@@@@@@@@@@@@ API CALL @@@@@@@@@@@@@@@@@@@@@  
             //  await need to save the order to the db 
             //  redirect to payPal api...
             console.log(`buy sentence clicked!`);   
@@ -175,6 +179,7 @@ const Editor = props => {
         }
     };
     const saveSentenceClicked = async () => {
+        //  @@@@@@@@@@@@@@@@@@@ API CALL @@@@@@@@@@@@@@@@@@@@@  
         //  await need to save the sentence to the db if sentence id exist, need to update, else need to create
         //  return success or failed to the user
         console.log(`saved sentence clicked!`);
@@ -237,7 +242,7 @@ const Editor = props => {
         setSentenceStyle({...sentenceStyle, textDecoration: 'underline'});
     };
     const setNoUnderLine = () => {
-        setSentenceStyle({...sentenceStyle, textDecoration: 'underline'});
+        setSentenceStyle({...sentenceStyle, textDecoration: 'none'});
     };
     const changeColor = c => {
         if(tabAction === 1) {
