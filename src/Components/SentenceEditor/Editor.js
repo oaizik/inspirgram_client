@@ -66,7 +66,7 @@ const useStyles = makeStyles(theme => ({
         textTransform: 'initial',
     },
     input: {
-        margin: '10% auto',
+        margin: '10px auto',
         display: 'flex',
         flexDirection: 'column',
         justifyContent: 'end',
@@ -77,7 +77,6 @@ const useStyles = makeStyles(theme => ({
         background: 'linear-gradient(45deg, #dcdcdc 30%, #696969 90%)',
         [theme.breakpoints.down(950)]: {
             width: '99%',
-            marginTop: '5%',
         },
     },
     finish: {
@@ -118,7 +117,7 @@ const sentenceDefaultStyle = {
         alignItems: 'center',   //    start, end
     },
     sentenceBody: '"Dont let yesterday take up too much of today"',
-    sentenceId: 3,
+    sentenceId: -1,
 };
 
 const Editor = props => {
@@ -149,11 +148,11 @@ const Editor = props => {
                 backgroundColor: state.sentences.items[props.location.params-1].style.backgroundColor, 
                 fontFamily: state.sentences.items[props.location.params-1].style.fontFamily
             });
-            if(state.user.user.userType === 'writer') {
+            if(localStorage.getItem('userId') === state.sentences.items[props.location.params-1].writerId) {
                 handleWriterEdit();
             } else {
             }
-        } else if(state.user.user.userType === 'writer') {
+        } else if(localStorage.getItem('userType') === 'writer') {
             handleWriter();
         } else {
             setRedirect("/");
@@ -175,40 +174,82 @@ const Editor = props => {
             console.log(`buy sentence clicked!`);   
             setRedirect("/");
         } else { //   if user is not logged in
-            handleAlertClick();
+            warningAlertClick();
         }
     };
     const saveSentenceClicked = async () => {
-        //  @@@@@@@@@@@@@@@@@@@ API CALL @@@@@@@@@@@@@@@@@@@@@  
-        //  await need to save the sentence to the db if sentence id exist, need to update, else need to create
-        //  return success or failed to the user
-        console.log(`saved sentence clicked!`);
-        console.log(sentenceStyle);
-        console.log(sentenceBody);
-        console.log(sentenceId);
-        // need to add here userId
-        //  set redirect
-        const sentence = {
-            // WriterId: id,
-            sentenceId: 10,
-            sentenceBody: sentenceBody,
-            style: {
-                textColor: sentenceStyle.color,
-                backgroundColor: sentenceStyle.backgroundColor,
-                fontFamily: sentenceStyle.fontFamily
+        if(sentenceId === -1) { //  adding new sentence
+            let parsed;
+            const res = await fetch('http://localhost:5000/sentences', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ writerId: localStorage.getItem('userId'), 
+                                   sentenceBody: sentenceBody,
+                                   style: {
+                                    textColor: sentenceStyle.color,
+                                    backgroundColor: sentenceStyle.backgroundColor,
+                                    fontFamily: sentenceStyle.fontFamily,
+                                    fontSize: sentenceStyle.fontSize,
+                                    fontWeight: sentenceStyle.fontWeight,
+                                    fontStyle: sentenceStyle.fontStyle,
+                                    textDecoration: sentenceStyle.textDecoration,
+                                    textAlign: sentenceStyle.textAlign,
+                                    alignItems: sentenceStyle.alignItems } 
+                                }),
+            })
+            parsed = await res.json();
+            if(parsed.status === 1) { //  editing sentence
+                goodAlertClick();
+            } else {
+                badAlertClick();
             }
-        };
-        props.createSentence(sentence);  
-        setRedirect("/");
+        } else {
+            let parsed;
+            const res = await fetch('http://localhost:5000/sentences', {
+            method: 'PUT',
+            headers: { 'Content-Type': 'application/json',
+                       'inspirgram_auth_token': localStorage.getItem('inspirgram_auth_token')
+                    },
+            body: JSON.stringify({ userId: localStorage.getItem('userId'), 
+                                   sentenceBody: sentenceBody,
+                                   style: {
+                                    textColor: sentenceStyle.color,
+                                    backgroundColor: sentenceStyle.backgroundColor,
+                                    fontFamily: sentenceStyle.fontFamily,
+                                    fontSize: sentenceStyle.fontSize,
+                                    fontWeight: sentenceStyle.fontWeight,
+                                    fontStyle: sentenceStyle.fontStyle,
+                                    textDecoration: sentenceStyle.textDecoration,
+                                    textAlign: sentenceStyle.textAlign,
+                                    alignItems: sentenceStyle.alignItems },
+                                   sentenceId: sentenceId,
+                                }),
+            })
+            parsed = await res.json();
+            if(parsed.status === 1) {
+                goodAlertClick();
+            } else {
+                badAlertClick();
+            }
+        }
+        // setRedirect("/");
     };
-    const handleAlertClick = () => {
+    const warningAlertClick = () => {
         setAlertOpen(true);
+    };
+    const goodAlertClick = () => {
+        setGoodAlertOpen(true);
+    };
+    const badAlertClick = () => {
+        setBadAlertOpen(true);
     };
     const handleAlertClose = (event, reason) => {
         if (reason === 'clickaway') {
         return;
         }
         setAlertOpen(false);
+        setGoodAlertOpen(false);
+        setGoodAlertOpen(false);
     }; 
     const ChangeTextSize = e => {
         setSentenceStyle({...sentenceStyle, fontSize: `${e}px`, lineHeight: `${e+10}px`});
@@ -277,17 +318,6 @@ const Editor = props => {
             <Button className={classes.button} variant="contained" onClick={setFontStyle}>I</Button>
             <Button style={{textDecoration: 'underline'}} className={classes.button} variant="contained" onClick={setUnderLine}>U</Button>
             <Button className={classes.button} variant="contained" onClick={setNoUnderLine}>U</Button>
-            {writer &&
-                    <div className={classes.input}>
-                    <p>Insert your new inspiration here:</p>
-                    <TextField
-                        id="outlined-name"
-                        label="Inspirgram"
-                        placeholder="Add your words"
-                        onChange={e=> changeSentenceBody(e.target.value)}
-                        variant="outlined"
-                    />
-                    </div>}
         </div>
     );
     const colorGroup = (
@@ -395,6 +425,8 @@ const Editor = props => {
     const [openFontFamily, setOpenFontFamily] = useState(false);
     const [tabValue, setTebValue] = useState(0);
     const [alertOpen, setAlertOpen] = useState(false);
+    const [goodAlertOpen, setGoodAlertOpen] = useState(false);
+    const [badAlertOpen, setBadAlertOpen] = useState(false);
     const [buttonsGroup, setButtonsGroup] = useState(textGroup);
     
     if(redirect !== undefined) {
@@ -428,6 +460,17 @@ const Editor = props => {
                     {sentenceBody}
                 </div>
             </Container>
+            {writer &&
+                <div className={classes.input}>
+                <p>Insert your new inspiration here:</p>
+                <TextField
+                    id="outlined-name"
+                    label="Inspirgram"
+                    placeholder="Add your words"
+                    onChange={e=> changeSentenceBody(e.target.value)}
+                    variant="outlined"
+                />
+                </div>}
             <div className={classes.finish}>
             {writer &&
                 <Button
@@ -452,6 +495,16 @@ const Editor = props => {
             <Snackbar open={alertOpen} autoHideDuration={4000} onClose={handleAlertClose}>
                 <Alert onClose={handleAlertClose} severity="warning">
                     You have to be logged in before making such action!
+                </Alert>
+            </Snackbar>
+            <Snackbar open={goodAlertOpen} autoHideDuration={4000} onClose={handleAlertClose}>
+                <Alert onClose={handleAlertClose} severity="success">
+                    your sentence has been saved successfuly!
+                </Alert>
+            </Snackbar>
+            <Snackbar open={badAlertOpen} autoHideDuration={4000} onClose={handleAlertClose}>
+                <Alert onClose={handleAlertClose} severity="error">
+                    sentence hasent been saved, please try again later
                 </Alert>
             </Snackbar>
             {/* change Font Size section */}

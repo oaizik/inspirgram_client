@@ -31,29 +31,48 @@ export default function UpdateProfileDialog(props) {
     const [password, setPassword] = useState(undefined);
     const [writer, setWriter] = useState(false);
     const [credentials, setCredentials] = useState(undefined);
-    
+
     const {open, handleUpdateClose } = props;
-    
+
     const incorectCredentials = (
         <div style={{color: 'red', margin: '0px auto',}}>
             there is a problem with your credentials, Please try again
         </div>
     );
-    
+
     const handleSubmit = async() => {
-        console.log(`name: ${name}, email: ${email}, password: ${password}, writer: ${writer}`);
-        const state = store.getState();
-        console.log(`id: ${state.user.user.id}`);
-        handleUpdateClose();
-        //  @@@@@@@@@@@@@@@@@@@ API CALL @@@@@@@@@@@@@@@@@@@@@  
-        //  api call to update user using name & email & password & writer & userId
-        //  put an access token in local storege
-        // put an access token in local storege
-        if(false) { // if user authenticate
-            
-        } else { //  if user dosent exist
+        let userType;
+        if(writer) {
+            userType = 'writer';
+        } else {
+            userType = 'client';
+        }
+        console.log(`name: ${name}, email: ${email}, password: ${password}, writer: ${userType}`);
+        console.log(localStorage.getItem('inspirgram_auth_token'));
+        let parsed;
+        let res;
+        try{
+            let headers = new Headers();
+            headers.append("Content-Type", "application/json");
+            headers.append('inspirgram_auth_token',localStorage.getItem('inspirgram_auth_token'));
+            res = await fetch('http://localhost:5000/users', {
+                method: 'PUT',
+                headers: { 'Content-Type': 'application/json', 'inspirgram_auth_token':  localStorage.getItem('inspirgram_auth_token')},
+                mode: 'cors',
+                body: JSON.stringify({ name: name, password: password, email: email, userType: userType}),
+                redirect: 'follow'
+            });
+            parsed = await res.json();
+        }catch (e) {
+            console.log(e)
+        }
+
+        if(parsed.status === 1) {
+            handleUpdateClose();
+        } else { // problem with response
             setCredentials(incorectCredentials);
         }
+
     };
     const handleWriter = () => {
         setWriter(!writer);

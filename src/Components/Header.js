@@ -107,9 +107,21 @@ export default function Header(props) {
         const state = store.getState();
         if(state.user.user.userType === 'writer') {
             setWriter(true);
+        } else if(localStorage.getItem('inspirgram_auth_token')) {
+            //  check if token is valid
+            //  get user Type and Id
+            //  set user logged in
+            Remember();
         }
     }, [isLoggedIn]); 
-    
+
+
+    const Remember = () => {
+        if(localStorage.getItem('userType') === 'writer') {
+            setWriter(true);
+        }
+        setIsLoggedIn(true);
+    };
     const changeDialog = () => {
         setDialog(!dialog);
     };
@@ -128,7 +140,7 @@ export default function Header(props) {
     };
     const setLogOut = () => {
         setIsLoggedIn(false);
-        //  delete user info that we saved
+        localStorage.clear();
     };
     const handleUpdate = () => {
         setOpenUpdate(true);
@@ -191,9 +203,6 @@ export default function Header(props) {
                 </NavLink>
                 <NavLink exact to="Catalog" color="inherit" variant="body2" className={classes.toolbarLink}>
                     Catalog
-                </NavLink>
-                <NavLink to="/" color="inherit" variant="body2" className={classes.toolbarLink}>
-                    Contact Us
                 </NavLink>
             </Toolbar>
             {dialog ? (

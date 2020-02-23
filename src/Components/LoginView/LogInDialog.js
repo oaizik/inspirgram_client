@@ -6,6 +6,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faFacebook } from '@fortawesome/free-brands-svg-icons';
 import { connect } from 'react-redux';
 import { createUser } from '../../redux/actions/userActions';
+import axios from 'axios';
 
 const useStyles = makeStyles(theme => ({
     dialog: {
@@ -57,28 +58,37 @@ const LoginDialog = props => {
         <div style={{color: 'red', margin: '0px auto',}}>
             Incorrect Credentials!
         </div>
-    )
-    const facebookClicked = () => console.log("clicked");
+    );
+    const existCredentials = (
+        <div style={{color: 'red', margin: '0px auto',}}>
+            Your email is already exist in our system, please log in with youe inspirgram credentials!
+        </div>
+    );
     
     const handleLogIn = async() => {
-        console.log(`email: ${email}, password: ${password}`);
-        //  @@@@@@@@@@@@@@@@@@@ API CALL @@@@@@@@@@@@@@@@@@@@@  
-        //  api call to authenticate user using email & password
-        //  put an access token in local storege
-        const user = {
-            id: 24,
-            name: 'pish pash',
-            email: 'mitzi@gmail.com',
-            userType: 'writer',
-            token: 'password'
-        };
-        props.createUser(user);
-        if(true) { // if user authenticate
+        let parsed;
+        const res = await fetch('http://localhost:5000/users/auth', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ email: email, password: password }),
+        })
+        parsed = await res.json();
+        
+        if(parsed.status === 1) { 
+            const user = {
+                id: parsed.userParams.id,
+                userType: parsed.userParams.userType
+            };
+            props.createUser(user);
+            localStorage.setItem('inspirgram_auth_token', parsed.userParams.token);
+            localStorage.setItem('userId', parsed.userParams.id);
+            localStorage.setItem('userType', parsed.userParams.userType);
             authUser();
         } else { //  if user dosent exist
-            setCredentials(incorectCredentials);
+            setCredentials(existCredentials);
         }
     };
+
     const responseFacebook = facebookResponse => {
         if(facebookResponse.picture === undefined) {
             // Do nothing, the user didnt send request
@@ -87,24 +97,38 @@ const LoginDialog = props => {
             facebookUser(facebookResponse);
         }
     };
+
     const facebookUser = async(facebookResponse) => {
-        try{
-            // await setIsLoading(true);
-            //  api call to authenticate user using facebook email 
-            //  if email exist log in the user
-            //  if user dosent exist create one using facebook.responce:
-            // const parsedResponse = {
-            //     email: facebookResponse.email,
-            //     name: facebookResponse.name,
-            //     facebook_id: facebookResponse.id,
-            // }
-            // put an access token in local storege
-            authUser();
-        } catch(e) {
-            console.error(e);
-        } finally {
-            // await setIsLoading(false);
+        const parsedResponse = {
+            email: facebookResponse.email,
+            name: facebookResponse.name,
+            facebook_id: facebookResponse.id,
         }
+        console.log(`email: ${parsedResponse.email}`);
+        console.log(`name: ${parsedResponse.name}`);
+        console.log(`facebook_id: ${parsedResponse.id}`);
+        let parsed;
+        const res = await fetch('http://localhost:5000/users/facebookUser', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ name: parsedResponse.name, email: parsedResponse.email }),
+        })
+        parsed = await res.json();
+        
+        if(parsed.status === 1) { 
+            const user = {
+                id: parsed.userParams.id,
+                userType: parsed.userParams.userType
+            };
+            props.createUser(user);
+            localStorage.setItem('inspirgram_auth_token', parsed.userParams.token);
+            localStorage.setItem('userId', parsed.userParams.id);
+            localStorage.setItem('userType', parsed.userParams.userType);
+            authUser();
+        } else { //  if user dosent exist
+            setCredentials(incorectCredentials);
+        }
+        // authUser();
     };
     const singupClicked = () => {
         changeDialog();
@@ -159,19 +183,18 @@ const LoginDialog = props => {
             </Button>
         </DialogActions>
         <DialogActions style={{marginTop: '1vh'}}>
-        {/* <FacebookLogin
+        <FacebookLogin
             appId="521519021811129"
             autoLoad={true}
             fields="name, email, picture"
-            onClick={facebookClicked}
-            // callback={responseFacebook}
+            callback={responseFacebook}
             icon={<FontAwesomeIcon 
                 icon={faFacebook} 
                 size="lg" 
                 style={{float: 'left', paddingBottom: '2px'}} 
                 />}
             buttonStyle = {bStyle}
-            /> */}
+            />
         </DialogActions>
         <DialogActions style={{marginTop: '1vh'}}>
             <Grid item xs>

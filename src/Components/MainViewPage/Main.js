@@ -62,10 +62,6 @@ const useStyles = makeStyles(theme => ({
 
 export default function SignInSide() {
     const classes = useStyles();
-    const gotoEdit = () => {
-        //  set redirect to editor
-        //  set sentence body to editor 
-    };
 
     return (
         <Grid container component="main" className={classes.root}>
@@ -95,7 +91,7 @@ export default function SignInSide() {
                         params: -1}}
                         style={{ textDecoration: 'none '}}
                     >
-                        <Button className={classes.button} variant="outlined" onClick={gotoEdit}>Goto Edit</Button>
+                        <Button className={classes.button} variant="outlined">Goto Edit</Button>
                     </NavLink>
                     </Grid>
                 </div>

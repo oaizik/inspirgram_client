@@ -1,6 +1,6 @@
 .sentencescontainer {
     display: flex;
     flex-wrap: wrap;
-    background-color: DodgerBlue;
+    justify-content: center;
 };
 

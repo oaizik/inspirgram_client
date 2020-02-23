@@ -1,7 +1,8 @@
 import React, { useState } from 'react';
 import { makeStyles } from '@material-ui/core/styles';
 import {Grid, Link, Checkbox, FormControlLabel, Button, TextField, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle }  from '@material-ui/core';
-
+import { connect } from 'react-redux';
+import { createUser } from '../../redux/actions/userActions';
 
 const useStyles = makeStyles(theme => ({
     dialog: {
@@ -21,7 +22,7 @@ const useStyles = makeStyles(theme => ({
     },
 }));
 
-export default function LoginDialog(props) {
+const SignedupDialog = props => {
     const classes = useStyles();
     const [name, setName] = useState(undefined);
     const [email, setEmail] = useState(undefined);
@@ -38,14 +39,37 @@ export default function LoginDialog(props) {
     );
     
     const handleSignup = async() => {
-        console.log(`name: ${name}, email: ${email}, password: ${password}, writer: ${writer}`);
-        //  @@@@@@@@@@@@@@@@@@@ API CALL @@@@@@@@@@@@@@@@@@@@@  
-        //  api call to create user using name & email & password & writer
-        //  put an access token in local storege
-        // put an access token in local storege
-        if(false) { // if user authenticate
+        let userType;
+        if(writer) {
+            userType = 'writer';
+        } else {
+            userType = 'client';
+        }
+        console.log(`name: ${name}, email: ${email}, password: ${password}, userType: ${userType}`);
+
+        let parsed;
+        const res = await fetch('http://localhost:5000/users', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ name: name, 
+                                   password: password,
+                                   email: email, 
+                                   userType: userType,
+                                   userAuthType: "email" }),
+        })
+        parsed = await res.json();
+        
+        if(parsed.status === 1) { 
+            const user = {
+                id: parsed.userParams.id,
+                userType: parsed.userParams.userType
+            };
+            props.createUser(user);
+            localStorage.setItem('inspirgram_auth_token', parsed.userParams.token);
+            localStorage.setItem('userId', parsed.userParams.id);
+            localStorage.setItem('userType', parsed.userParams.userType);
             authUser();
-        } else { //  if user dosent exist
+        } else { // problem with response
             setCredentials(incorectCredentials);
         }
     };
@@ -126,3 +150,11 @@ export default function LoginDialog(props) {
 };
 
 
+const mapStateToProps = state => ({
+    user: state.user
+});
+
+export default connect(
+    mapStateToProps,
+    { createUser }
+)(SignedupDialog);

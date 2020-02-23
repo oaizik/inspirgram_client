@@ -33,8 +33,8 @@ class Sentences extends Component {
     
     render() {
         const sentenceItems = this.props.sentences.map(sentence => (
-            <div key={sentence.sentenceId} style={{margin: '10px', height: '250px', width: '200px', backgroundColor: sentence.style.backgroundColor,}}>
-                <div style={{height: '205px', color: sentence.style.textColor, fontFamily: sentence.style.fontFamil, }}>{sentence.sentenceBody}</div>
+            <div key={sentence.sentenceId} style={{margin: '10px', height: '250px', width: '300px', backgroundColor: sentence.style.backgroundColor,}}>
+                <div style={{height: '205px', fontSize: '18px', display: 'flex', color: sentence.style.textColor, fontFamily: sentence.style.fontFamily, fontWeight: sentence.style.fontWeight, fontStyle: sentence.style.fontStyle, textDecoration: sentence.style.textDecoration, textAlign: sentence.style.textAlign, alignItems: sentence.style.alignItems }}>{sentence.sentenceBody}</div>
                 <div className="iconsdiv" style={{height: '45px', backgroundColor: 'white', display: 'flex', justifyContent: 'space-between',}}>
                     <Tooltip title="like" aria-label="like" >
                         <IconButton aria-label="add to shopping cart" onClick={() => this.likeClicked(sentence.sentenceId)}>

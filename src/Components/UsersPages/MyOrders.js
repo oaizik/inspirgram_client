@@ -1,6 +1,5 @@
 import React, {useState, useEffect} from 'react';
-import { NavLink } from 'react-router-dom';
-import { Button, Typography, makeStyles, Container, IconButton, Tooltip } from '@material-ui/core';
+import { Typography, makeStyles, Container, IconButton, Tooltip } from '@material-ui/core';
 import DeleteIcon from '@material-ui/icons/Delete';
 import AddShoppingCartIcon from '@material-ui/icons/AddShoppingCart';
 
@@ -67,75 +66,39 @@ export default function MyOrders() {
 
     useEffect(() => { 
         //  here we fetch akk client orders with user id
-        const state = store.getState();
-        const id = state.user.user.id;
-        const sentences = state.sentences.items;
-
-        const orders = [
-            {
-                style: {
-                    textColor: 'black',
-                    backgroundColor: 'white',
-                    fontFamily: 'Ariel',
-                },
-                sentenceId: 1,
-                platform: "canvas",
-                orderId: 1,
-                updateedAt: "2020-01-28T14:22:19.190+00:00",
-            },
-            {
-                style: {
-                    textColor: 'black',
-                    backgroundColor: 'blue',
-                    fontFamily: 'Ariel',
-                },
-                sentenceId: 2,
-                platform: "t-shirt",
-                orderId: 2,
-                updateedAt: "2020-01-28T14:22:46.353+00:00",
-            },
-            {
-                style: {
-                    textColor: 'black',
-                    backgroundColor: 'green',
-                    fontFamily: 'Ariel',
-                },
-                sentenceId: 3,
-                platform: "canvas",
-                orderId: 3,
-                updateedAt: "2020-01-28T14:22:22.353+00:00",
-            },
-            {
-                style: {
-                    textColor: 'black',
-                    backgroundColor: 'red',
-                    fontFamily: 'Ariel',
-                },
-                sentenceId: 4,
-                platform: "photo",
-                orderId: 4,
-                updateedAt: "2020-01-28T14:22:22.353+00:00",
-            },
-        ];
-        if(orders !== undefined) {
-            const display = orders.map(order => (
-                <div key={order.orderId} style={{margin: '10px', height: '250px', width: '200px', backgroundColor: order.style.backgroundColor,}}>
-                    <div style={{height: '205px', color: order.style.textColor, fontFamily: order.style.fontFamily, }}>{state.sentences.items[order.sentenceId-1].sentenceBody}</div>
-                    <div className="iconsdiv" style={{height: '45px', backgroundColor: 'white', display: 'flex', justifyContent: 'space-between',}}>
-                        <Tooltip title="buy now" aria-label="buy now" >
-                            <IconButton aria-label="add to shopping cart" onClick={() => deleteClicked(order.orderId)} >
-                                <DeleteIcon style={{ color: 'gray' }} />
-                            </IconButton>
-                        </Tooltip>
-                        <Tooltip title="buy now" aria-label="buy now" >
-                            <IconButton aria-label="add to shopping cart" onClick={() => buyClicked(order)} >
-                                <AddShoppingCartIcon style={{ color: 'gray' }} />
-                            </IconButton>
-                        </Tooltip>
-                    </div>
-                </div>));
-            setContent(display);
-        }
+        async function getData () {
+            const state = store.getState();
+            let parsed;
+            const res = await fetch('http://localhost:5000/orders/allClient', {
+                method: 'GET',
+                headers: { 'Content-Type': 'application/json',
+                           'inspirgram_auth_token':  localStorage.getItem('inspirgram_auth_token')
+                         }
+            })
+            parsed = await res.json();
+            console.log(parsed);
+            // const orders = parsed.data;
+            // if(orders !== []) {
+            //     const display = orders.map(order => (
+            //         <div key={order.orderId} style={{margin: '10px', height: '250px', width: '200px', backgroundColor: order.style.backgroundColor,}}>
+            //             <div style={{height: '205px', color: order.style.textColor, fontFamily: order.style.fontFamily, }}>{state.sentences.items[order.sentenceId-1].sentenceBody}</div>
+            //             <div className="iconsdiv" style={{height: '45px', backgroundColor: 'white', display: 'flex', justifyContent: 'space-between',}}>
+            //                 <Tooltip title="buy now" aria-label="buy now" >
+            //                     <IconButton aria-label="add to shopping cart" onClick={() => deleteClicked(order.orderId)} >
+            //                         <DeleteIcon style={{ color: 'gray' }} />
+            //                     </IconButton>
+            //                 </Tooltip>
+            //                 <Tooltip title="buy now" aria-label="buy now" >
+            //                     <IconButton aria-label="add to shopping cart" onClick={() => buyClicked(order)} >
+            //                         <AddShoppingCartIcon style={{ color: 'gray' }} />
+            //                     </IconButton>
+            //                 </Tooltip>
+            //             </div>
+            //         </div>));
+            //     setContent(display);
+            // }
+        };
+        getData();
     }, [orders]); 
 
 

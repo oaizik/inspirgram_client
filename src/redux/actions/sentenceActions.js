@@ -1,7 +1,7 @@
 import { FETCH_SENTENCES, NEW_SENTENCE } from './types';
 
 export const fetchSentences = () => dispatch => {
-    fetch('https://inspirgram.herokuapp.com/sentences')
+    fetch('http://localhost:5000/sentences')
         .then(res => res.json())
         .then(sentences =>
             dispatch({
