@@ -14,7 +14,7 @@ const useStyles = makeStyles(theme => ({
         width: '97%',
     },
     image: {
-        backgroundImage: 'linear-gradient(45deg, #dcdcdc 30%, #696969 90%)',
+        backgroundImage: 'linear-gradient(45deg, #dcdcdc 40%, #dcdc99 90%)',
         backgroundColor:
             theme.palette.type === 'dark' ? theme.palette.grey[900] : theme.palette.grey[50],
         backgroundSize: 'cover',
@@ -29,7 +29,7 @@ const useStyles = makeStyles(theme => ({
         margin: '10px',
     },
     textGrid: {
-        backgroundImage: 'linear-gradient(45deg, #f8f8ff 30%, #dcdcdc 90%)',
+        backgroundImage: 'linear-gradient(45deg, #dcdcfe 30%, #dceefe 90%)',
     },
     paper: {
         margin: theme.spacing(8, 4),
@@ -38,23 +38,17 @@ const useStyles = makeStyles(theme => ({
         justifyContent: 'start',
         alignItems: 'left',
     },
-    avatar: {
-        margin: theme.spacing(1),
-        backgroundColor: theme.palette.secondary.main,
-    },
     text: {
         width: '100%', // Fix IE 11 issue.
         marginTop: theme.spacing(1),
-    },
-    submit: {
-        margin: theme.spacing(3, 0, 2),
     },
     seperator: {
         margin: '10vh',
     },
     button: {
-        backgroundImage: 'linear-gradient(45deg, #dcdcdc 30%, #696969 90%)',
+        backgroundImage: 'linear-gradient(45deg, #dcdcfe 30%, #dceefe 90%)',
         textTransform: 'initial',
+        border: '2px solid',
         width: '20vh',
         fontWeight: 700,
     },

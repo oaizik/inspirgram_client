@@ -12,8 +12,6 @@ export const fetchSentences = () => dispatch => {
 };
 
 export const createSentence = sentenceData => ({
-    //  need to insert sentense data to the db 
-
     type: NEW_SENTENCE,
     payload: sentenceData
 });

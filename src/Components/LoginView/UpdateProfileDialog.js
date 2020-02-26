@@ -1,7 +1,6 @@
 import React, { useState } from 'react';
 import { makeStyles } from '@material-ui/core/styles';
-import {Snackbar, Checkbox, FormControlLabel, Button, TextField, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle }  from '@material-ui/core';
-import store from '../../redux/store';
+import {Checkbox, FormControlLabel, Button, TextField, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle }  from '@material-ui/core';
 
 
 const useStyles = makeStyles(theme => ({
@@ -11,14 +10,6 @@ const useStyles = makeStyles(theme => ({
         display: 'flex',
         justifyContent: 'center',
         textAlign: 'center',
-    },
-    helpGrid: {
-        displey: 'flex',
-        justifyContent: 'center',
-    },
-    signup: {
-        backgroungColor: 'white',
-        color: 'primary',
     },
 }));
 
@@ -31,15 +22,15 @@ export default function UpdateProfileDialog(props) {
     const [password, setPassword] = useState(undefined);
     const [writer, setWriter] = useState(false);
     const [credentials, setCredentials] = useState(undefined);
-
+    
     const {open, handleUpdateClose } = props;
-
+    
     const incorectCredentials = (
         <div style={{color: 'red', margin: '0px auto',}}>
             there is a problem with your credentials, Please try again
         </div>
     );
-
+    
     const handleSubmit = async() => {
         let userType;
         if(writer) {
@@ -47,39 +38,35 @@ export default function UpdateProfileDialog(props) {
         } else {
             userType = 'client';
         }
-        console.log(`name: ${name}, email: ${email}, password: ${password}, writer: ${userType}`);
-        console.log(localStorage.getItem('inspirgram_auth_token'));
         let parsed;
-        let res;
-        try{
-            let headers = new Headers();
-            headers.append("Content-Type", "application/json");
-            headers.append('inspirgram_auth_token',localStorage.getItem('inspirgram_auth_token'));
-            res = await fetch('http://localhost:5000/users', {
-                method: 'PUT',
-                headers: { 'Content-Type': 'application/json', 'inspirgram_auth_token':  localStorage.getItem('inspirgram_auth_token')},
-                mode: 'cors',
-                body: JSON.stringify({ name: name, password: password, email: email, userType: userType}),
-                redirect: 'follow'
-            });
+        try {
+            const res = await fetch('http://localhost:5000/users', {
+            method: 'PUT',
+            headers: { 'Content-Type': 'application/json', 'inspirgram_auth_token':  localStorage.getItem('inspirgram_auth_token')},
+            body: JSON.stringify({ name: name, password: password, email: email, userType: userType}),
+            })
             parsed = await res.json();
-        }catch (e) {
-            console.log(e)
+        } catch(e) {
+            console.log(e);
+            setCredentials(incorectCredentials);
         }
-
-        if(parsed.status === 1) {
+        if(parsed.status === 1) { 
+            if(writer) {
+                localStorage.setItem('userType', 'writer');
+            } else {
+                localStorage.setItem('userType', 'client');
+            }
             handleUpdateClose();
         } else { // problem with response
             setCredentials(incorectCredentials);
         }
-
     };
     const handleWriter = () => {
         setWriter(!writer);
     };
 
     return <Dialog className={classes.dialog} open={open} onClose={handleUpdateClose} aria-labelledby="form-dialog-title">
-        <DialogTitle id="form-dialog-title" className={classes.title}>Inspirgram Log-in</DialogTitle>
+        <DialogTitle id="form-dialog-title" className={classes.title}>Inspirgram Update details</DialogTitle>
         <DialogTitle id="form-dialog-title" className={classes.title}>
             <svg version="1.0" xmlns="http://www.w3.org/2000/svg"
                 width="34.000000pt" height="36.000000pt" viewBox="0 0 34.000000 36.000000"

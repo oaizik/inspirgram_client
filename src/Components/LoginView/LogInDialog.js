@@ -6,7 +6,6 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faFacebook } from '@fortawesome/free-brands-svg-icons';
 import { connect } from 'react-redux';
 import { createUser } from '../../redux/actions/userActions';
-import axios from 'axios';
 
 const useStyles = makeStyles(theme => ({
     dialog: {
@@ -15,14 +14,6 @@ const useStyles = makeStyles(theme => ({
         display: 'flex',
         justifyContent: 'center',
         textAlign: 'center',
-    },
-    helpGrid: {
-        displey: 'flex',
-        justifyContent: 'center',
-    },
-    signup: {
-        backgroungColor: 'white',
-        color: 'primary',
     },
 }));
 
@@ -67,13 +58,17 @@ const LoginDialog = props => {
     
     const handleLogIn = async() => {
         let parsed;
-        const res = await fetch('http://localhost:5000/users/auth', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ email: email, password: password }),
-        })
-        parsed = await res.json();
-        
+        try {
+            const res = await fetch('http://localhost:5000/users/auth', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ email: email, password: password }),
+            })
+            parsed = await res.json();
+        } catch(e) {
+            console.log(e);
+            setCredentials(existCredentials);
+        }
         if(parsed.status === 1) { 
             const user = {
                 id: parsed.userParams.id,
@@ -91,8 +86,7 @@ const LoginDialog = props => {
 
     const responseFacebook = facebookResponse => {
         if(facebookResponse.picture === undefined) {
-            // Do nothing, the user didnt send request
-            console.log('the user is not authenticate');
+            console.log('the user is not authenticate by facebook');
         } else {
             facebookUser(facebookResponse);
         }
@@ -104,17 +98,18 @@ const LoginDialog = props => {
             name: facebookResponse.name,
             facebook_id: facebookResponse.id,
         }
-        console.log(`email: ${parsedResponse.email}`);
-        console.log(`name: ${parsedResponse.name}`);
-        console.log(`facebook_id: ${parsedResponse.id}`);
         let parsed;
-        const res = await fetch('http://localhost:5000/users/facebookUser', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ name: parsedResponse.name, email: parsedResponse.email }),
-        })
-        parsed = await res.json();
-        
+        try {
+            const res = await fetch('http://localhost:5000/users/facebookUser', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ name: parsedResponse.name, email: parsedResponse.email }),
+            })
+            parsed = await res.json();
+        } catch(e) {
+            console.log(e);
+            setCredentials(incorectCredentials);
+        }
         if(parsed.status === 1) { 
             const user = {
                 id: parsed.userParams.id,
@@ -128,7 +123,6 @@ const LoginDialog = props => {
         } else { //  if user dosent exist
             setCredentials(incorectCredentials);
         }
-        // authUser();
     };
     const singupClicked = () => {
         changeDialog();

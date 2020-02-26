@@ -52,7 +52,7 @@ const MainView = props => {
         if(Object.keys(state.sentences.item).length !== 0) {
             this.props.sentences.unshift(state.sentences.item);
         };
-    }, []);
+    }, [props]);
 
     return (
         <React.Fragment>

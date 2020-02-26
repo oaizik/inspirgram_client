@@ -1,7 +1,6 @@
 import React from 'react';
-import { Route, BrowserRouter } from 'react-router-dom';
+import { Route, BrowserRouter, Redirect } from 'react-router-dom';
 import { MuiThemeProvider } from '@material-ui/core/styles';
-import LoggedInUserContext from '../loggedInUserContext';
 import App from '../App';
 import theme from '../Theme';
 
@@ -13,7 +12,7 @@ import MySentences from '../Components/UsersPages/MySentences';
 import Header from '../Components/Header';
 import Footer from '../Components/Footer';
 
-const InspirgramRouter = ({}) => {
+const InspirgramRouter = () => {
     return <BrowserRouter basename='/'>
         <MuiThemeProvider theme={theme}>
             <App>
@@ -21,8 +20,10 @@ const InspirgramRouter = ({}) => {
                 <Route exact path="/" component={MainView} />
                 <Route exact path="/Catalog" component={Catalog}/>
                 <Route exact path="/Editor" component={Editor}/>
+                <Route path="//paypal/success" component={Editor}/>
                 <Route exact path="/MyOrders" component={MyOrders}/>
                 <Route exact path="/MySentences" component={MySentences}/>
+                <Redirect to="/" />
                 <Footer />
             </App>
         </MuiThemeProvider>
@@ -31,14 +32,3 @@ const InspirgramRouter = ({}) => {
 
 export default InspirgramRouter;
 
-// const ReactRouter = () => {
-//     return (
-//         <React.Fragment>
-//             <Header />
-//             <Route exact path="/" component={MainView}/>
-//             <Route path="/Catalog" component={Catalog}/>
-//             <Footer />
-//         </React.Fragment>
-//     )
-// }
-// export default ReactRouter;

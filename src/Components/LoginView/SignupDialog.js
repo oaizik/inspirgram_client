@@ -12,14 +12,6 @@ const useStyles = makeStyles(theme => ({
         justifyContent: 'center',
         textAlign: 'center',
     },
-    helpGrid: {
-        displey: 'flex',
-        justifyContent: 'center',
-    },
-    signup: {
-        backgroungColor: 'white',
-        color: 'primary',
-    },
 }));
 
 const SignedupDialog = props => {
@@ -45,20 +37,22 @@ const SignedupDialog = props => {
         } else {
             userType = 'client';
         }
-        console.log(`name: ${name}, email: ${email}, password: ${password}, userType: ${userType}`);
-
         let parsed;
-        const res = await fetch('http://localhost:5000/users', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ name: name, 
-                                   password: password,
-                                   email: email, 
-                                   userType: userType,
-                                   userAuthType: "email" }),
-        })
-        parsed = await res.json();
-        
+        try {
+            const res = await fetch('http://localhost:5000/users', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ name: name, 
+                                       password: password,
+                                       email: email, 
+                                       userType: userType,
+                                       userAuthType: "email" }),
+            })
+            parsed = await res.json();
+        } catch(e) {
+            console.log(e);
+            setCredentials(incorectCredentials);
+        }  
         if(parsed.status === 1) { 
             const user = {
                 id: parsed.userParams.id,

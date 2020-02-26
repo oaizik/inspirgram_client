@@ -10,27 +10,9 @@ import { fetchSentences } from '../../redux/actions/sentenceActions';
 import store from '../../redux/store';
 
 const useStyles = makeStyles(theme => ({
-    icon: {
-        marginRight: theme.spacing(2),
-    },
     heroContent: {
         backgroundColor: theme.palette.background.paper,
         padding: theme.spacing(8, 0, 6),
-    },
-    cardGrid: {
-        paddingTop: theme.spacing(8),
-        paddingBottom: theme.spacing(8),
-    },
-    card: {
-        height: '100%',
-        display: 'flex',
-        flexDirection: 'column',
-    },
-    cardMedia: {
-        paddingTop: '56.25%', // 16:9
-    },
-    cardContent: {
-        flexGrow: 1,
     },
     sentencescontainer: {
         display: 'flex',
@@ -45,7 +27,8 @@ const useStyles = makeStyles(theme => ({
     },
     navButton: {
         textDecoration: 'none',
-        backgroundColor: 'pink',
+        backgroundColor: 'white',
+        border: '2px solid',
     },
     addDiv: {
         display: 'flex',
@@ -84,20 +67,56 @@ const MySentences = props => {
 
     const deleteClicked = async (sentenceId) => {
         let parsed;
-        const res = await fetch('http://localhost:5000/sentences/', {
-            method: 'DELETE',
-            headers: { 'Content-Type': 'application/json',
-                       'inspirgram_auth_token':  localStorage.getItem('inspirgram_auth_token')
-                     },
-            body: JSON.stringify({ sentenceId: sentenceId })
-        })
-        parsed = await res.json();
-
+        try {
+            const res = await fetch('http://localhost:5000/sentences/', {
+                method: 'DELETE',
+                headers: { 'Content-Type': 'application/json',
+                           'inspirgram_auth_token':  localStorage.getItem('inspirgram_auth_token')
+                         },
+                body: JSON.stringify({ sentenceId: sentenceId })
+            })
+            parsed = await res.json();
+        } catch(e) {
+            console.log(e);
+            badAlertClick();
+        }
         if(parsed.status === 1) { 
             goodAlertClick();
         } else { 
             badAlertClick();
         }
+        let temp = sentences.filter(sentence => sentence.sentenceId !== sentenceId);
+        if(temp !== undefined) {
+            const empty = [];
+            temp.forEach(function(obj){
+                if(obj.writerId == localStorage.getItem('userId')) {
+                    empty.push(obj);
+                }
+            });
+            const display = empty.map(sentence => (
+                <div key={sentence.sentenceId} style={{border: '1px solid', margin: '10px', height: '250px', width: '300px', backgroundColor: sentence.style.backgroundColor,}}>
+                    <div style={{height: '205px', fontSize: '18px', display: 'flex', color: sentence.style.textColor, fontFamily: sentence.style.fontFamil, fontWeight: sentence.style.fontWeight, fontStyle: sentence.style.fontStyle, textDecoration: sentence.style.textDecoration, textAlign: sentence.style.textAlign, alignItems: sentence.style.alignItems}}>{sentence.sentenceBody}</div>
+                    <div style={{height: '45px', backgroundColor: 'white', display: 'flex', justifyContent: 'space-between',}}>
+                        <Tooltip title="edit" aria-label="edit" >
+                            <NavLink to = {{
+                                pathname:'/Editor',
+                                params:  sentence.sentenceId, 
+                            }}
+                            >
+                                <EditOutlinedIcon style={{ color: 'gray', marginTop: '15px', marginLeft: '8px' }} />
+                            </NavLink>
+                        </Tooltip>
+                        <div className={classes.orders}><PaymentIcon style={{ color: 'gray', marginTop: '15px' }} />{sentence.numOfOrders}</div>
+                        <Tooltip title="buy now" aria-label="buy now" >
+                            <IconButton aria-label="add to shopping cart" onClick={() => deleteClicked(sentence.sentenceId)} >
+                                <DeleteIcon style={{ color: 'gray' }} />
+                            </IconButton>
+                        </Tooltip>
+                    </div>
+                </div>));
+            setContent(display);
+        }
+        
     };
 
     useEffect(() => { 
@@ -113,12 +132,10 @@ const MySentences = props => {
                     empty.push(obj);
                 }
             });
-
-            
             const display = empty.map(sentence => (
-                <div key={sentence.sentenceId} style={{margin: '10px', height: '250px', width: '300px', backgroundColor: sentence.style.backgroundColor,}}>
+                <div key={sentence.sentenceId} style={{border: '1px solid', margin: '10px', height: '250px', width: '300px', backgroundColor: sentence.style.backgroundColor,}}>
                     <div style={{height: '205px', fontSize: '18px', display: 'flex', color: sentence.style.textColor, fontFamily: sentence.style.fontFamil, fontWeight: sentence.style.fontWeight, fontStyle: sentence.style.fontStyle, textDecoration: sentence.style.textDecoration, textAlign: sentence.style.textAlign, alignItems: sentence.style.alignItems}}>{sentence.sentenceBody}</div>
-                    <div className="iconsdiv" style={{height: '45px', backgroundColor: 'white', display: 'flex', justifyContent: 'space-between',}}>
+                    <div style={{height: '45px', backgroundColor: 'white', display: 'flex', justifyContent: 'space-between',}}>
                         <Tooltip title="edit" aria-label="edit" >
                             <NavLink to = {{
                                 pathname:'/Editor',

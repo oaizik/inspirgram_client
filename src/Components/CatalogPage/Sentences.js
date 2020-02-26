@@ -18,27 +18,88 @@ class Sentences extends Component {
         }
     };
 
-    likeClicked(sentenceId) {
-        console.log(`${sentenceId}`);
+    likeClicked(e) {
+        console.log(e);
     };
 
-    buyClicked(sentenceId) {
-        //  @@@@@@@@@@@@@ API CALL @@@@@@@@@@@@@@@
-        //  need to make order of sentence id to the client
-        console.log(`${sentenceId}`);
+    async buyClicked(sentenceId) {
+        if(localStorage.getItem('userId')) { 
+            //  new order
+            let parsedRes;
+            try {
+                const response = await fetch('http://localhost:5000/orders/', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json',
+                               'inspirgram_auth_token': localStorage.getItem('inspirgram_auth_token')
+                            },
+                    body: JSON.stringify({ clientId: localStorage.getItem('userId'), 
+                                           sentenceId: sentenceId,
+                                           platform: "canvas",
+                                           style: {
+                                            textColor: this.props.sentences[sentenceId].style.textColor,
+                                            backgroundColor: this.props.sentences[sentenceId].style.backgroundColor,
+                                            fontFamily: this.props.sentences[sentenceId].style.fontFamily,
+                                            fontSize: this.props.sentences[sentenceId].style.fontSize,
+                                            fontWeight: this.props.sentences[sentenceId].style.fontWeight,
+                                            fontStyle: this.props.sentences[sentenceId].style.fontStyle,
+                                            textDecoration: this.props.sentences[sentenceId].style.textDecoration,
+                                            textAlign: this.props.sentences[sentenceId].style.textAlign,
+                                            alignItems: this.props.sentences[sentenceId].style.alignItems } 
+                                            // alignItems: state.sentences.items[sentenceId].style.alignItems
+                                        }),
+                    })
+                    parsedRes = await response.json();
+            } catch(e) {
+                console.log(e);
+                alert('an Error occured, order didnt complete!');
+            }
+            if(parsedRes.status === 1) { 
+                alert('redirect to paypal!');
+            } else {
+                alert('an Error occured, order didnt complete!');
+            }
+
+            //  paypal pay
+            let parsed;
+            try {
+                const res = await fetch('http://localhost:5000/paypal/pay', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                                            "items":[{
+                                                "name": "item", 
+                                                "sku": "001",
+                                                "price": "25.00",
+                                                "currency": "USD",
+                                                "quantity": 1 },
+                                            ],
+                                            "currency":"USD"
+                                        }),
+                    })
+                    parsed = await res.json();
+            } catch(e) {
+                console.log(e);
+            }
+            if(parsed.paymentLink) {
+                window.location = `${parsed.paymentLink}`;
+            } else {
+                alert('an Error occured, order didnt complete!');
+            };
+            
+        } else { //   if user is not logged in
+            alert('you have to be logged in before making a purches!');
+        }
     };
-    
-
-
     
     render() {
+        let liked = 'gray';
         const sentenceItems = this.props.sentences.map(sentence => (
-            <div key={sentence.sentenceId} style={{margin: '10px', height: '250px', width: '300px', backgroundColor: sentence.style.backgroundColor,}}>
+            <div key={sentence.sentenceId} style={{border: '1px solid', margin: '10px', height: '250px', width: '300px', backgroundColor: sentence.style.backgroundColor,}}>
                 <div style={{height: '205px', fontSize: '18px', display: 'flex', color: sentence.style.textColor, fontFamily: sentence.style.fontFamily, fontWeight: sentence.style.fontWeight, fontStyle: sentence.style.fontStyle, textDecoration: sentence.style.textDecoration, textAlign: sentence.style.textAlign, alignItems: sentence.style.alignItems }}>{sentence.sentenceBody}</div>
                 <div className="iconsdiv" style={{height: '45px', backgroundColor: 'white', display: 'flex', justifyContent: 'space-between',}}>
                     <Tooltip title="like" aria-label="like" >
-                        <IconButton aria-label="add to shopping cart" onClick={() => this.likeClicked(sentence.sentenceId)}>
-                            <FavoriteBorderTwoToneIcon style={{ color: 'gray' }} />
+                        <IconButton aria-label="add to shopping cart" onClick={() => this.likeClicked(this)}>
+                            <FavoriteBorderTwoToneIcon style={{ color: liked }} />
                         </IconButton>
                     </Tooltip>
                     <Tooltip title="edit" aria-label="edit" >
@@ -73,35 +134,3 @@ const mapStateToProps = state => ({
 export default connect(mapStateToProps, { fetchSentences })(Sentences);
 
 
-// const Posts = props => {
-
-//     useEffect( () => {
-//         props.fetchPosts();
-//         console.log('first');
-//     }, [props.count]);
-    // componentWillReceiveProps(nextProps) {
-    //     if (nextProps.newPost) {
-    //         this.props.posts.unshift(nextProps.newPost);
-    //     }
-    // }
-//     const postItems = props.posts.map(post => (
-//         <div key={post.id}>
-//             <h3>{post.title}</h3>
-//             <p>{post.body}</p>
-//         </div>
-//     ));
-        
-//     return (
-//         <div>
-//             <h1>Posts</h1>
-//             {postItems}
-//         </div>
-//     );
-// };
-
-// const mapStateToProps = state => ({
-//     posts: state.posts.items,
-//     newPost: state.posts.item
-// });
-
-// export default connect(mapStateToProps, { fetchPosts })(Posts);

@@ -26,7 +26,9 @@ const useStyles = makeStyles(theme => ({
     },
     paper: {
         width: '40%',
-        backgroundColor: 'azure',
+        borderRadius: '10px',
+        border: '1px solid',
+        backgroundColor: 'radial-gradient(circle, rgba(238,174,202,1) 0%, rgba(148,187,233,1) 100%)',
         [theme.breakpoints.down(700)]: {
             marginTop: '5vh',
             width: '90%',
@@ -50,7 +52,7 @@ const useStyles = makeStyles(theme => ({
     button: {
         textTransform: 'initial',
         margin: '10px 10px 10px 10px',
-        background: 'linear-gradient(45deg, #dcdcdc 30%, #696969 90%)',
+        background: 'linear-gradient(45deg, #dcdcdc 30%, #dcdcef 90%)',
     },
     formControl: {
         margin: theme.spacing(1),
@@ -72,9 +74,8 @@ const useStyles = makeStyles(theme => ({
         justifyContent: 'end',
         alignItems: 'center',
         width: '95%',
-        height: '20vh',
+        height: '11vh',
         fontFamily: '"Lucida Console", Monaco, monospace',
-        background: 'linear-gradient(45deg, #dcdcdc 30%, #696969 90%)',
         [theme.breakpoints.down(950)]: {
             width: '99%',
         },
@@ -95,8 +96,10 @@ const useStyles = makeStyles(theme => ({
         textTransform: 'initial',
         margin: '10px 10px 10px 10px',
         width: '100%',
-        background: 'linear-gradient(45deg, #2196F3 30%, #21CBF3 90%)',
-        boxShadow: '0 3px 5px 2px rgba(33, 203, 243, .3)',
+        background: 'linear-gradient(45deg, #dcdcdc 30%, #dcdcef 90%)',
+        color: 'black',
+        fontSize: '18px',
+        fontWeight: 'bold',
     },
 }));
 
@@ -124,23 +127,21 @@ const Editor = props => {
     const classes = useStyles();
     const [redirect, setRedirect] = useState(undefined);
     const [writer, setWriter] = useState(false);
+
     const handleWriter = () => {
         setWriter(true);
-        console.log('here2');
         setSentenceBody('please enter your creation in the input field');
     };
 
     const handleWriterEdit = () => {
         setWriter(true);
-        console.log('here3');
     };
 
     useEffect(() => {
         const state = store.getState();
         if(props.location.params === -1) {
-            
+            setSentenceId(6);
         } else if(props.location.params) {   
-            console.log(props.location.params);
             setSentenceId(state.sentences.items[props.location.params-1].sentenceId);
             setSentenceBody(state.sentences.items[props.location.params-1].sentenceBody);
             setSentenceStyle({...sentenceStyle, 
@@ -148,7 +149,7 @@ const Editor = props => {
                 backgroundColor: state.sentences.items[props.location.params-1].style.backgroundColor, 
                 fontFamily: state.sentences.items[props.location.params-1].style.fontFamily
             });
-            if(localStorage.getItem('userId') === state.sentences.items[props.location.params-1].writerId) {
+            if(localStorage.getItem('userId') == state.sentences.items[props.location.params-1].writerId) {
                 handleWriterEdit();
             } else {
             }
@@ -166,13 +167,69 @@ const Editor = props => {
     let tabAction = 0;
 
     const buySentenceClicked = async () => {
-        const state = store.getState();
-        if(state.user.user.id !== undefined) { 
-            //  @@@@@@@@@@@@@@@@@@@ API CALL @@@@@@@@@@@@@@@@@@@@@  
-            //  await need to save the order to the db 
-            //  redirect to payPal api...
-            console.log(`buy sentence clicked!`);   
-            setRedirect("/");
+        if(localStorage.getItem('userId')) { 
+            //  new order
+            let parsedRes;
+            try {
+                const response = await fetch('http://localhost:5000/orders/', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json',
+                               'inspirgram_auth_token': localStorage.getItem('inspirgram_auth_token')
+                            },
+                    body: JSON.stringify({ clientId: localStorage.getItem('userId'), 
+                                           sentenceId: sentenceId,
+                                           platform: "canvas",
+                                           style: {
+                                            textColor: sentenceStyle.color,
+                                            backgroundColor: sentenceStyle.backgroundColor,
+                                            fontFamily: sentenceStyle.fontFamily,
+                                            fontSize: sentenceStyle.fontSize,
+                                            fontWeight: sentenceStyle.fontWeight,
+                                            fontStyle: sentenceStyle.fontStyle,
+                                            textDecoration: sentenceStyle.textDecoration,
+                                            textAlign: sentenceStyle.textAlign,
+                                            alignItems: sentenceStyle.alignItems } 
+                                        }),
+                    })
+                    parsedRes = await response.json();
+            } catch(e) {
+                console.log(e);
+                badAlertClick();
+            }
+            if(parsedRes.status === 1) { 
+                goodAlertClick();
+            } else {
+                badAlertClick();
+            }
+            
+            //  paypal pay
+            let parsed;
+            try {
+                const res = await fetch('http://localhost:5000/paypal/pay', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                                            "items":[{
+                                                "name": "item", 
+                                                "sku": "001",
+                                                "price": "25.00",
+                                                "currency": "USD",
+                                                "quantity": 1 },
+                                            ],
+                                            "currency":"USD"
+                                        }),
+                    })
+                    parsed = await res.json();
+            } catch(e) {
+                console.log(e);
+                badAlertClick();
+            }
+            if(parsed.paymentLink) {
+                window.location = `${parsed.paymentLink}`;
+            } else {
+                badAlertClick();
+            };
+            
         } else { //   if user is not logged in
             warningAlertClick();
         }
@@ -180,59 +237,70 @@ const Editor = props => {
     const saveSentenceClicked = async () => {
         if(sentenceId === -1) { //  adding new sentence
             let parsed;
-            const res = await fetch('http://localhost:5000/sentences', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ writerId: localStorage.getItem('userId'), 
-                                   sentenceBody: sentenceBody,
-                                   style: {
-                                    textColor: sentenceStyle.color,
-                                    backgroundColor: sentenceStyle.backgroundColor,
-                                    fontFamily: sentenceStyle.fontFamily,
-                                    fontSize: sentenceStyle.fontSize,
-                                    fontWeight: sentenceStyle.fontWeight,
-                                    fontStyle: sentenceStyle.fontStyle,
-                                    textDecoration: sentenceStyle.textDecoration,
-                                    textAlign: sentenceStyle.textAlign,
-                                    alignItems: sentenceStyle.alignItems } 
-                                }),
-            })
-            parsed = await res.json();
-            if(parsed.status === 1) { //  editing sentence
+            try {
+                const res = await fetch('http://localhost:5000/sentences', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json',
+                               'inspirgram_auth_token': localStorage.getItem('inspirgram_auth_token') 
+                             },
+                    body: JSON.stringify({ writerId: localStorage.getItem('userId'), 
+                                           sentenceBody: sentenceBody,
+                                           style: {
+                                            textColor: sentenceStyle.color,
+                                            backgroundColor: sentenceStyle.backgroundColor,
+                                            fontFamily: sentenceStyle.fontFamily,
+                                            fontSize: sentenceStyle.fontSize,
+                                            fontWeight: sentenceStyle.fontWeight,
+                                            fontStyle: sentenceStyle.fontStyle,
+                                            textDecoration: sentenceStyle.textDecoration,
+                                            textAlign: sentenceStyle.textAlign,
+                                            alignItems: sentenceStyle.alignItems } 
+                                        }),
+                    })
+                    parsed = await res.json();
+            } catch(e) {
+                console.log(e);
+                badAlertClick();
+            }
+            if(parsed.status === 1) { 
                 goodAlertClick();
             } else {
                 badAlertClick();
             }
-        } else {
+        } else { //  editing sentence
             let parsed;
-            const res = await fetch('http://localhost:5000/sentences', {
-            method: 'PUT',
-            headers: { 'Content-Type': 'application/json',
-                       'inspirgram_auth_token': localStorage.getItem('inspirgram_auth_token')
-                    },
-            body: JSON.stringify({ userId: localStorage.getItem('userId'), 
-                                   sentenceBody: sentenceBody,
-                                   style: {
-                                    textColor: sentenceStyle.color,
-                                    backgroundColor: sentenceStyle.backgroundColor,
-                                    fontFamily: sentenceStyle.fontFamily,
-                                    fontSize: sentenceStyle.fontSize,
-                                    fontWeight: sentenceStyle.fontWeight,
-                                    fontStyle: sentenceStyle.fontStyle,
-                                    textDecoration: sentenceStyle.textDecoration,
-                                    textAlign: sentenceStyle.textAlign,
-                                    alignItems: sentenceStyle.alignItems },
-                                   sentenceId: sentenceId,
-                                }),
-            })
-            parsed = await res.json();
+            try {
+                const res = await fetch('http://localhost:5000/sentences', {
+                    method: 'PUT',
+                    headers: { 'Content-Type': 'application/json',
+                               'inspirgram_auth_token': localStorage.getItem('inspirgram_auth_token')
+                            },
+                    body: JSON.stringify({ userId: localStorage.getItem('userId'), 
+                                           sentenceBody: sentenceBody,
+                                           style: {
+                                            textColor: sentenceStyle.color,
+                                            backgroundColor: sentenceStyle.backgroundColor,
+                                            fontFamily: sentenceStyle.fontFamily,
+                                            fontSize: sentenceStyle.fontSize,
+                                            fontWeight: sentenceStyle.fontWeight,
+                                            fontStyle: sentenceStyle.fontStyle,
+                                            textDecoration: sentenceStyle.textDecoration,
+                                            textAlign: sentenceStyle.textAlign,
+                                            alignItems: sentenceStyle.alignItems },
+                                           sentenceId: sentenceId,
+                                        }),
+                    })
+                    parsed = await res.json();
+            } catch(e) {
+                console.log(e);
+                badAlertClick();
+            }
             if(parsed.status === 1) {
                 goodAlertClick();
             } else {
                 badAlertClick();
             }
         }
-        // setRedirect("/");
     };
     const warningAlertClick = () => {
         setAlertOpen(true);
@@ -439,6 +507,17 @@ const Editor = props => {
                     <Typography style={{fontFamily: "'Lato', sans-serif"}} component="h2" variant="h4" align="center" color="textPrimary" gutterBottom>
                         Welcome to our Mighty editor!
                     </Typography>
+                    {writer &&
+                    <div className={classes.input}>
+                    <p>Insert your new inspiration here:</p>
+                    <TextField
+                        id="outlined-name"
+                        label="Inspirgram"
+                        placeholder="Add your words"
+                        onChange={e=> changeSentenceBody(e.target.value)}
+                        variant="outlined"
+                    />
+                    </div>}
                 </Container>
             </div>
             <Container className={classes.container}>
@@ -460,17 +539,6 @@ const Editor = props => {
                     {sentenceBody}
                 </div>
             </Container>
-            {writer &&
-                <div className={classes.input}>
-                <p>Insert your new inspiration here:</p>
-                <TextField
-                    id="outlined-name"
-                    label="Inspirgram"
-                    placeholder="Add your words"
-                    onChange={e=> changeSentenceBody(e.target.value)}
-                    variant="outlined"
-                />
-                </div>}
             <div className={classes.finish}>
             {writer &&
                 <Button
@@ -499,12 +567,12 @@ const Editor = props => {
             </Snackbar>
             <Snackbar open={goodAlertOpen} autoHideDuration={4000} onClose={handleAlertClose}>
                 <Alert onClose={handleAlertClose} severity="success">
-                    your sentence has been saved successfuly!
+                    your action has been completed successfuly!
                 </Alert>
             </Snackbar>
             <Snackbar open={badAlertOpen} autoHideDuration={4000} onClose={handleAlertClose}>
                 <Alert onClose={handleAlertClose} severity="error">
-                    sentence hasent been saved, please try again later
+                    action hasent been completed, please try again later
                 </Alert>
             </Snackbar>
             {/* change Font Size section */}

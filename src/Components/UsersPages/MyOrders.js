@@ -1,106 +1,106 @@
 import React, {useState, useEffect} from 'react';
-import { Typography, makeStyles, Container, IconButton, Tooltip } from '@material-ui/core';
+import {Snackbar, Typography, makeStyles, Container, IconButton, Tooltip } from '@material-ui/core';
 import DeleteIcon from '@material-ui/icons/Delete';
-import AddShoppingCartIcon from '@material-ui/icons/AddShoppingCart';
+import MuiAlert from '@material-ui/lab/Alert';
 
 import store from '../../redux/store';
 
 
 const useStyles = makeStyles(theme => ({
-    icon: {
-        marginRight: theme.spacing(2),
-    },
     heroContent: {
         backgroundColor: theme.palette.background.paper,
         padding: theme.spacing(8, 0, 6),
     },
-    cardGrid: {
-        paddingTop: theme.spacing(8),
-        paddingBottom: theme.spacing(8),
-    },
-    card: {
-        height: '100%',
-        display: 'flex',
-        flexDirection: 'column',
-    },
-    cardMedia: {
-        paddingTop: '56.25%', // 16:9
-    },
-    cardContent: {
-        flexGrow: 1,
-    },
     orderscontainer: {
         display: 'flex',
         flexWrap: 'wrap',
-        backgroundColor: 'DodgerBlue',
-    },
-    addbutton: {
-        textTransform: 'initial',
-        color: 'black',
-        margin: '0px auto',
-        textDecoration: 'none',
-        fontWeight: 'bold',
+        justifyContent: 'center',
     },
 }));
 
+function Alert(props) {
+    return <MuiAlert elevation={6} variant="filled" {...props} />;
+}
 export default function MyOrders() {
     const classes = useStyles();
     const [content, setContent] = useState(<div></div>);
-    const [orders, setOrders] = useState(undefined)
-    const [id, setId] = useState(1);
+    const [goodAlertOpen, setGoodAlertOpen] = useState(false);
+    const [badAlertOpen, setBadAlertOpen] = useState(false);
 
-    const deleteClicked = orderId => {
-        //  @@@@@@@@@@@@@@@@@@@ API CALL @@@@@@@@@@@@@@@@@@@@@  
-        //delete order
-        //sentence id = sentenceId
-        //user id = id
-        console.log(`order id: ${orderId}`);
+    const goodAlertClick = () => {
+        setGoodAlertOpen(true);
     };
+    const badAlertClick = () => {
+        setBadAlertOpen(true);
+    };
+    const handleAlertClose = (event, reason) => {
+        if (reason === 'clickaway') {
+        return;
+        }
+        setGoodAlertOpen(false);
+        setGoodAlertOpen(false);
+    }; 
 
-    const buyClicked = (order) => {
-        //  @@@@@@@@@@@@@@@@@@@ API CALL @@@@@@@@@@@@@@@@@@@@@  
-        //make the same order
-        //all the info needed is in the order object
-        console.log(`order obj: ${order}`);
+    const deleteClicked = async (order) => {  
+        let parsed;
+        try {
+            const res = await fetch('http://localhost:5000/orders/', {
+                method: 'DELETE',
+                headers: { 'Content-Type': 'application/json',
+                           'inspirgram_auth_token':  localStorage.getItem('inspirgram_auth_token')
+                         },
+                body: JSON.stringify({ sentenceId: order.sentenceId, orderId: order.orderId })
+            })
+            parsed = await res.json();
+        } catch(e) {
+            console.log(e);
+            badAlertClick();
+        }
+        if(parsed.status === 1) { 
+            goodAlertClick();
+        } else { 
+            badAlertClick();
+        }
     };
 
     useEffect(() => { 
-        //  here we fetch akk client orders with user id
         async function getData () {
             const state = store.getState();
             let parsed;
-            const res = await fetch('http://localhost:5000/orders/allClient', {
-                method: 'GET',
-                headers: { 'Content-Type': 'application/json',
-                           'inspirgram_auth_token':  localStorage.getItem('inspirgram_auth_token')
-                         }
-            })
-            parsed = await res.json();
-            console.log(parsed);
-            // const orders = parsed.data;
-            // if(orders !== []) {
-            //     const display = orders.map(order => (
-            //         <div key={order.orderId} style={{margin: '10px', height: '250px', width: '200px', backgroundColor: order.style.backgroundColor,}}>
-            //             <div style={{height: '205px', color: order.style.textColor, fontFamily: order.style.fontFamily, }}>{state.sentences.items[order.sentenceId-1].sentenceBody}</div>
-            //             <div className="iconsdiv" style={{height: '45px', backgroundColor: 'white', display: 'flex', justifyContent: 'space-between',}}>
-            //                 <Tooltip title="buy now" aria-label="buy now" >
-            //                     <IconButton aria-label="add to shopping cart" onClick={() => deleteClicked(order.orderId)} >
-            //                         <DeleteIcon style={{ color: 'gray' }} />
-            //                     </IconButton>
-            //                 </Tooltip>
-            //                 <Tooltip title="buy now" aria-label="buy now" >
-            //                     <IconButton aria-label="add to shopping cart" onClick={() => buyClicked(order)} >
-            //                         <AddShoppingCartIcon style={{ color: 'gray' }} />
-            //                     </IconButton>
-            //                 </Tooltip>
-            //             </div>
-            //         </div>));
-            //     setContent(display);
-            // }
+            try {
+                const res = await fetch('http://localhost:5000/orders/allClient', {
+                    method: 'GET',
+                    headers: { 'Content-Type': 'application/json',
+                               'inspirgram_auth_token':  localStorage.getItem('inspirgram_auth_token')
+                             }
+                })
+                parsed = await res.json();
+            } catch(e) {
+                console.log(e);
+            }
+            if(parsed.status === 1) {
+                const orders = parsed.data;
+                if(orders.length !== 0) {
+                    const display = orders.map(order => (
+                        <div key={order.orderId} style={{border: '1px solid', margin: '10px', height: '250px', width: '300px', backgroundColor: order.style.backgroundColor,}}>
+                            <div style={{height: '205px', fontSize: '18px', display: 'flex', color: order.style.textColor, fontFamily: order.style.fontFamily, fontWeight: order.style.fontWeight, fontStyle: order.style.fontStyle, textDecoration: order.style.textDecoration, textAlign: order.style.textAlign, alignItems: order.style.alignItems }}>{state.sentences.items[order.sentenceId-1].sentenceBody}</div>
+                            <div style={{ height: '45px', backgroundColor: 'white', display: 'flex', justifyContent: 'space-between' }}>
+                                <Tooltip title="cancel order" aria-label="cancel order" >
+                                    <IconButton aria-label="add to shopping cart" onClick={() => deleteClicked(order)} >
+                                        <DeleteIcon style={{ color: 'gray' }} />
+                                    </IconButton>
+                                </Tooltip>
+                            </div>
+                        </div>));
+                    setContent(display);
+                }
+            } else {
+                setContent(<div>Orders are empty</div>);
+            }
+            
         };
         getData();
-    }, [orders]); 
-
+    }, []); 
 
     return (
         <div>
@@ -117,6 +117,16 @@ export default function MyOrders() {
             <div className={classes.orderscontainer}>
                 {content}
             </div>
+            <Snackbar open={goodAlertOpen} autoHideDuration={4000} onClose={handleAlertClose}>
+                <Alert onClose={handleAlertClose} severity="success">
+                    your action has been completed successfuly!
+                </Alert>
+            </Snackbar>
+            <Snackbar open={badAlertOpen} autoHideDuration={4000} onClose={handleAlertClose}>
+                <Alert onClose={handleAlertClose} severity="error">
+                    action hasent been completed, please try again later
+                </Alert>
+            </Snackbar>
         </div>
     )
 };

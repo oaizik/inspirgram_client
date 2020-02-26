@@ -8,15 +8,11 @@ import HighlightOffIcon from '@material-ui/icons/HighlightOff';
 import LoginDialog from './LoginView/LogInDialog';
 import SignedupDialog from './LoginView/SignupDialog';
 import UpdateProfileDialog from './LoginView/UpdateProfileDialog';
-import MuiAlert from '@material-ui/lab/Alert';
-
 import store from '../redux/store';;
-
-
 
 const useStyles = makeStyles(theme => ({
     root: {
-        backgroundImage: 'linear-gradient(45deg, #dcdcdc 30%, #696969 90%)',
+        backgroundImage: 'linear-gradient(45deg, #dcdcdc 30%, #dcdefe 90%)',
         marginBottom: '1vh',
     },
     toolbar: {
@@ -91,11 +87,8 @@ const useStyles = makeStyles(theme => ({
     },
 }));
 
-function Alert(props) {
-    return <MuiAlert elevation={6} variant="filled" {...props} />;
-}
+export default function Header() {
 
-export default function Header(props) {
     const classes = useStyles()
     const [isWriter, setWriter] = useState(false);
     const [isLoggedIn, setIsLoggedIn] = useState(false); 
@@ -108,9 +101,6 @@ export default function Header(props) {
         if(state.user.user.userType === 'writer') {
             setWriter(true);
         } else if(localStorage.getItem('inspirgram_auth_token')) {
-            //  check if token is valid
-            //  get user Type and Id
-            //  set user logged in
             Remember();
         }
     }, [isLoggedIn]); 
