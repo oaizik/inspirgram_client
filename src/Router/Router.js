@@ -20,7 +20,7 @@ const InspirgramRouter = () => {
                 <Route exact path="/" component={MainView} />
                 <Route exact path="/Catalog" component={Catalog}/>
                 <Route exact path="/Editor" component={Editor}/>
-                <Route path="//paypal/success" component={Editor}/>
+                <Route path="/paypal/success" component={Editor}/>
                 <Route exact path="/MyOrders" component={MyOrders}/>
                 <Route exact path="/MySentences" component={MySentences}/>
                 <Redirect to="/" />
