@@ -5,6 +5,7 @@ import DeleteIcon from '@material-ui/icons/Delete';
 import EditOutlinedIcon from '@material-ui/icons/EditOutlined';
 import PaymentIcon from '@material-ui/icons/Payment';
 import MuiAlert from '@material-ui/lab/Alert';
+import {config, useSpring, animated} from 'react-spring';
 import { connect } from 'react-redux';
 import { fetchSentences } from '../../redux/actions/sentenceActions';
 import store from '../../redux/store';
@@ -120,6 +121,7 @@ const MySentences = props => {
     };
 
     useEffect(() => { 
+        console.log('here');
         const info = store.getState();
         if(info.sentences.items.length === 0) {
             props.fetchSentences();
@@ -154,13 +156,25 @@ const MySentences = props => {
                     </div>
                 </div>));
             setContent(display);
-        }
+        } 
     }, [sentences]); 
 
+    const [mySentencesSpring, setMySentencesSpring] = useSpring(()=>({
+        from: { opacity: 0, transform: 'translate3d(0px, -1000px, -100px)'},
+        to: { opacity: 1, transform: 'translate3d(0px,0px,0px)'},
+        delay: 400,
+        config: config.wobbly
+    })); 
+    const [heroSpring, setHeroSpring] = useSpring(()=>({
+        from: { opacity: 0, transform: 'translate3d(0px, -1000px, -100px)'},
+        to: { opacity: 1, transform: 'translate3d(0px,0px,0px)'},
+        delay: 600,
+        config: config.wobbly
+    }));   
 
     return (
         <div>
-            <div className={classes.heroContent}>
+            <animated.div style={heroSpring} className={classes.heroContent}>
                 <Container maxWidth="sm">
                     <Typography component="h1" variant="h2" align="center" color="textPrimary" gutterBottom>
                         My Sentences
@@ -174,10 +188,10 @@ const MySentences = props => {
                         <Button variant="outlined" className={classes.addbutton} >Add New Sentence</Button>
                     </NavLink>
                 </div>
-            </div>
-            <div className={classes.sentencescontainer}>
+            </animated.div>
+            <animated.div style={mySentencesSpring} className={classes.sentencescontainer}>
                 {content}
-            </div>
+            </animated.div>
             <Snackbar open={goodAlertOpen} autoHideDuration={4000} onClose={handleAlertClose}>
                 <Alert onClose={handleAlertClose} severity="success">
                     your sentence has been deleted successfuly!
