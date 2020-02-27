@@ -1,7 +1,7 @@
 import React from 'react';
 import { Typography, makeStyles, Container } from '@material-ui/core';
 import Sentences from './Sentences';
-
+import {config, useSpring, animated} from 'react-spring';
 
 const useStyles = makeStyles(theme => ({
     heroContent: {
@@ -13,7 +13,23 @@ const useStyles = makeStyles(theme => ({
 
 export default function Catalog() {
     const classes = useStyles();
-    // const [like, setLike] = useState(true);
+
+    const [leftSpring, setLeftSpring] = useSpring(()=>({
+        from: { opacity: 0,
+            transform: 'translate3d(0px, -1000px, 0px)'},
+        to: {   opacity: 1,
+            transform: 'translate3d(0px,0px,0px)'},
+        delay: 500,
+        config: config.wobbly
+    }));   
+    const [hrSpring, setHrSpring] = useSpring(()=>({
+        from: { opacity: 0,
+            transform: 'translate3d(0px, -1000px, 0px)'},
+        to: {   opacity: 1,
+            transform: 'translate3d(0px,0px,0px)'},
+        delay: 1000,
+        config: config.wobbly
+    }));   
 
     return (
         <div>
@@ -25,15 +41,16 @@ export default function Catalog() {
                     <Typography variant="h5" align="center" color="textSecondary" paragraph>
                         our product are very good and helpful and you really want to buy them,
                         is simply dummy text of the printing and typesetting industry. 
-                        Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, 
-                        when an unknown printer took a galley of type and scrambled it to make a type spe
                     </Typography>
                 </Container>
             </div>
-            <div>
+            
+            <animated.div style={hrSpring}>
                 <hr />
+            </animated.div>
+            <animated.div style={leftSpring}>
                 <Sentences />
-            </div>
+            </animated.div>
         </div>
     );
 }
