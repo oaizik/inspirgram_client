@@ -120,7 +120,7 @@ export default function UpdateProfileDialog(props) {
           />
         </DialogContent>
         <DialogActions style={{marginTop: '2vh'}}>
-            <Button type="submit" fullWidth variant="contained" color="primary" onClick={handleSubmit}>
+            <Button type="submit" fullWidth variant="contained" style={{backgroundColor: 'pink'}} onClick={handleSubmit}>
                 Submit
             </Button>
         </DialogActions>
