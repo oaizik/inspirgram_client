@@ -64,12 +64,12 @@ const MySentences = props => {
         }
         setGoodAlertOpen(false);
         setGoodAlertOpen(false);
-    }; 
+    };
 
     const deleteClicked = async (sentenceId) => {
         let parsed;
         try {
-            const res = await fetch('http://localhost:5000/sentences/', {
+            const res = await fetch('https://inspirgram.herokuapp.com/sentences/', {
                 method: 'DELETE',
                 headers: { 'Content-Type': 'application/json',
                            'inspirgram_auth_token':  localStorage.getItem('inspirgram_auth_token')
@@ -81,9 +81,9 @@ const MySentences = props => {
             console.log(e);
             badAlertClick();
         }
-        if(parsed.status === 1) { 
+        if(parsed.status === 1) {
             goodAlertClick();
-        } else { 
+        } else {
             badAlertClick();
         }
         let temp = sentences.filter(sentence => sentence.sentenceId !== sentenceId);
@@ -101,7 +101,7 @@ const MySentences = props => {
                         <Tooltip title="edit" aria-label="edit" >
                             <NavLink to = {{
                                 pathname:'/Editor',
-                                params:  sentence.sentenceId, 
+                                params:  sentence.sentenceId,
                             }}
                             >
                                 <EditOutlinedIcon style={{ color: 'gray', marginTop: '15px', marginLeft: '8px' }} />
@@ -117,10 +117,10 @@ const MySentences = props => {
                 </div>));
             setContent(display);
         }
-        
+
     };
 
-    useEffect(() => { 
+    useEffect(() => {
         console.log('here');
         const info = store.getState();
         if(info.sentences.items.length === 0) {
@@ -141,7 +141,7 @@ const MySentences = props => {
                         <Tooltip title="edit" aria-label="edit" >
                             <NavLink to = {{
                                 pathname:'/Editor',
-                                params:  sentence.sentenceId, 
+                                params:  sentence.sentenceId,
                             }}
                             >
                                 <EditOutlinedIcon style={{ color: 'gray', marginTop: '15px', marginLeft: '8px' }} />
@@ -156,21 +156,21 @@ const MySentences = props => {
                     </div>
                 </div>));
             setContent(display);
-        } 
-    }, [sentences]); 
+        }
+    }, [sentences]);
 
     const [mySentencesSpring, setMySentencesSpring] = useSpring(()=>({
         from: { opacity: 0, transform: 'translate3d(0px, -1000px, -100px)'},
         to: { opacity: 1, transform: 'translate3d(0px,0px,0px)'},
         delay: 400,
         config: config.wobbly
-    })); 
+    }));
     const [heroSpring, setHeroSpring] = useSpring(()=>({
         from: { opacity: 0, transform: 'translate3d(0px, -1000px, -100px)'},
         to: { opacity: 1, transform: 'translate3d(0px,0px,0px)'},
         delay: 600,
         config: config.wobbly
-    }));   
+    }));
 
     return (
         <div>

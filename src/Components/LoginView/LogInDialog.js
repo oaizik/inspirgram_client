@@ -27,7 +27,7 @@ const bStyle = {
     lettSpacing: '1px',
     fontWeight: '200',
     backgroundColor: '#3b5998',
-    opacity: '0.7',  
+    opacity: '0.7',
     textTransform: 'initial',
     '&:hover': {
         opacity: '1',
@@ -45,7 +45,7 @@ const LoginDialog = props => {
     const [credentials, setCredentials] = useState(undefined);
 
     const {open, handleClose, authUser, changeDialog } = props;
-    
+
     const incorectCredentials = (
         <div style={{color: 'red', margin: '0px auto',}}>
             Incorrect Credentials!
@@ -56,11 +56,11 @@ const LoginDialog = props => {
             Your email is already exist in our system, please log in with youe inspirgram credentials!
         </div>
     );
-    
+
     const handleLogIn = async() => {
         let parsed;
         try {
-            const res = await fetch('http://localhost:5000/users/auth', {
+            const res = await fetch('https://inspirgram.herokuapp.com/users/auth', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ email: email, password: password }),
@@ -70,7 +70,7 @@ const LoginDialog = props => {
             console.log(e);
             setCredentials(existCredentials);
         }
-        if(parsed.status === 1) { 
+        if(parsed.status === 1) {
             const user = {
                 id: parsed.userParams.id,
                 userType: parsed.userParams.userType
@@ -101,7 +101,7 @@ const LoginDialog = props => {
         }
         let parsed;
         try {
-            const res = await fetch('http://localhost:5000/users/facebookUser', {
+            const res = await fetch('https://inspirgram.herokuapp.com/users/facebookUser', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ name: parsedResponse.name, email: parsedResponse.email }),
@@ -111,7 +111,7 @@ const LoginDialog = props => {
             console.log(e);
             setCredentials(incorectCredentials);
         }
-        if(parsed.status === 1) { 
+        if(parsed.status === 1) {
             const user = {
                 id: parsed.userParams.id,
                 userType: parsed.userParams.userType
@@ -183,10 +183,10 @@ const LoginDialog = props => {
             autoLoad={true}
             fields="name, email, picture"
             callback={responseFacebook}
-            icon={<FontAwesomeIcon 
-                icon={faFacebook} 
-                size="lg" 
-                style={{float: 'left', paddingBottom: '2px'}} 
+            icon={<FontAwesomeIcon
+                icon={faFacebook}
+                size="lg"
+                style={{float: 'left', paddingBottom: '2px'}}
                 />}
             buttonStyle = {bStyle}
             />

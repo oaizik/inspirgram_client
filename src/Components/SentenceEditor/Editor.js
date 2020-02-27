@@ -117,13 +117,13 @@ const sentenceDefaultStyle = {
     style: {
         color: 'black',
         backgroundColor: 'white',
-        fontFamily: 'Courier New", Courier, monospace', 
-        fontSize: '50px',   
-        fontWeight: 'normal',  
-        fontStyle: 'normal',   
-        textDecoration: 'none', 
-        textAlign: 'center',    
-        alignItems: 'center',  
+        fontFamily: 'Courier New", Courier, monospace',
+        fontSize: '50px',
+        fontWeight: 'normal',
+        fontStyle: 'normal',
+        textDecoration: 'none',
+        textAlign: 'center',
+        alignItems: 'center',
     },
     sentenceBody: '"Dont let yesterday take up too much of today"',
     sentenceId: -1,
@@ -151,12 +151,12 @@ const Editor = props => {
         const state = store.getState();
         if(props.location.params === -1) {
             setSentenceId(6);
-        } else if(props.location.params) {   
+        } else if(props.location.params) {
             setSentenceId(state.sentences.items[props.location.params-1].sentenceId);
             setSentenceBody(state.sentences.items[props.location.params-1].sentenceBody);
-            setSentenceStyle({...sentenceStyle, 
-                color: state.sentences.items[props.location.params-1].style.textColor, 
-                backgroundColor: state.sentences.items[props.location.params-1].style.backgroundColor, 
+            setSentenceStyle({...sentenceStyle,
+                color: state.sentences.items[props.location.params-1].style.textColor,
+                backgroundColor: state.sentences.items[props.location.params-1].style.backgroundColor,
                 fontFamily: state.sentences.items[props.location.params-1].style.fontFamily
             });
             if(localStorage.getItem('userId') == state.sentences.items[props.location.params-1].writerId) {
@@ -168,8 +168,8 @@ const Editor = props => {
         } else {
             setRedirect("/");
         }
-        
-    }, [writer]); 
+
+    }, [writer]);
 
     const [sentenceStyle, setSentenceStyle] = useState(sentenceDefaultStyle.style);
     const [sentenceBody, setSentenceBody] = useState(sentenceDefaultStyle.sentenceBody);
@@ -177,16 +177,16 @@ const Editor = props => {
     let tabAction = 0;
 
     const buySentenceClicked = async () => {
-        if(localStorage.getItem('userId')) { 
+        if(localStorage.getItem('userId')) {
             //  new order
             let parsedRes;
             try {
-                const response = await fetch('http://localhost:5000/orders/', {
+                const response = await fetch('https://inspirgram.herokuapp.com/orders/', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json',
                                'inspirgram_auth_token': localStorage.getItem('inspirgram_auth_token')
                             },
-                    body: JSON.stringify({ clientId: localStorage.getItem('userId'), 
+                    body: JSON.stringify({ clientId: localStorage.getItem('userId'),
                                            sentenceId: sentenceId,
                                            platform: "canvas",
                                            style: {
@@ -198,7 +198,7 @@ const Editor = props => {
                                             fontStyle: sentenceStyle.fontStyle,
                                             textDecoration: sentenceStyle.textDecoration,
                                             textAlign: sentenceStyle.textAlign,
-                                            alignItems: sentenceStyle.alignItems } 
+                                            alignItems: sentenceStyle.alignItems }
                                         }),
                     })
                     parsedRes = await response.json();
@@ -206,21 +206,21 @@ const Editor = props => {
                 console.log(e);
                 badAlertClick();
             }
-            if(parsedRes.status === 1) { 
+            if(parsedRes.status === 1) {
                 goodAlertClick();
             } else {
                 badAlertClick();
             }
-            
+
             //  paypal pay
             let parsed;
             try {
-                const res = await fetch('http://localhost:5000/paypal/pay', {
+                const res = await fetch('https://inspirgram.herokuapp.com/paypal/pay', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({
                                             "items":[{
-                                                "name": "item", 
+                                                "name": "item",
                                                 "sku": "001",
                                                 "price": "25.00",
                                                 "currency": "USD",
@@ -239,7 +239,7 @@ const Editor = props => {
             } else {
                 badAlertClick();
             };
-            
+
         } else { //   if user is not logged in
             warningAlertClick();
         }
@@ -248,12 +248,12 @@ const Editor = props => {
         if(sentenceId === -1) { //  adding new sentence
             let parsed;
             try {
-                const res = await fetch('http://localhost:5000/sentences', {
+                const res = await fetch('https://inspirgram.herokuapp.com/sentences', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json',
-                               'inspirgram_auth_token': localStorage.getItem('inspirgram_auth_token') 
+                               'inspirgram_auth_token': localStorage.getItem('inspirgram_auth_token')
                              },
-                    body: JSON.stringify({ writerId: localStorage.getItem('userId'), 
+                    body: JSON.stringify({ writerId: localStorage.getItem('userId'),
                                            sentenceBody: sentenceBody,
                                            style: {
                                             textColor: sentenceStyle.color,
@@ -264,7 +264,7 @@ const Editor = props => {
                                             fontStyle: sentenceStyle.fontStyle,
                                             textDecoration: sentenceStyle.textDecoration,
                                             textAlign: sentenceStyle.textAlign,
-                                            alignItems: sentenceStyle.alignItems } 
+                                            alignItems: sentenceStyle.alignItems }
                                         }),
                     })
                     parsed = await res.json();
@@ -272,7 +272,7 @@ const Editor = props => {
                 console.log(e);
                 badAlertClick();
             }
-            if(parsed.status === 1) { 
+            if(parsed.status === 1) {
                 goodAlertClick();
             } else {
                 badAlertClick();
@@ -280,12 +280,12 @@ const Editor = props => {
         } else { //  editing sentence
             let parsed;
             try {
-                const res = await fetch('http://localhost:5000/sentences', {
+                const res = await fetch('https://inspirgram.herokuapp.com/sentences', {
                     method: 'PUT',
                     headers: { 'Content-Type': 'application/json',
                                'inspirgram_auth_token': localStorage.getItem('inspirgram_auth_token')
                             },
-                    body: JSON.stringify({ userId: localStorage.getItem('userId'), 
+                    body: JSON.stringify({ userId: localStorage.getItem('userId'),
                                            sentenceBody: sentenceBody,
                                            style: {
                                             textColor: sentenceStyle.color,
@@ -328,7 +328,7 @@ const Editor = props => {
         setAlertOpen(false);
         setGoodAlertOpen(false);
         setGoodAlertOpen(false);
-    }; 
+    };
     const ChangeTextSize = e => {
         setSentenceStyle({...sentenceStyle, fontSize: `${e}px`, lineHeight: `${e+10}px`});
         setOpenFontSize(false);
@@ -344,7 +344,7 @@ const Editor = props => {
     const ChangeFontFamily = e => {
         setSentenceStyle({...sentenceStyle, fontFamily: `${e}`});
         setOpenFontFamily(false);
-    };   
+    };
     const setFontWeight = () => {
         setSentenceStyle({...sentenceStyle, fontWeight: 'normal'});
     };
@@ -388,7 +388,7 @@ const Editor = props => {
     const [finishSpring, setFinishSpring] = useSpring(() => ({ xys: [0, 0, 1], config: config.wobbly }))
     const [sentenceSpring, setSentenceSpring] = useSpring(() => ({ xys: [0, 0, 1], config: config.wobbly }))
     const textGroup = (
-        <animated.div 
+        <animated.div
             onMouseMove={({ clientX: x, clientY: y }) => setButtonSpring({ xys: calcButton(x, y) })}
             onMouseLeave={() => setButtonSpring({ xys: [0, 0, 1] })}
             style={{ transform: buttonSpring.xys.interpolate(transButton) }}
@@ -406,7 +406,7 @@ const Editor = props => {
         </animated.div>
     );
     const colorGroup = (
-        <animated.div 
+        <animated.div
             onMouseMove={({ clientX: x, clientY: y }) => setButtonSpring({ xys: calcButton(x, y) })}
             onMouseLeave={() => setButtonSpring({ xys: [0, 0, 1] })}
             style={{ transform: buttonSpring.xys.interpolate(transButton) }}
@@ -508,7 +508,7 @@ const Editor = props => {
         </animated.div>
     );
 
-    
+
     const [openFontSize, setOpenFontSize] = useState(false);
     const [openTextAlign, setOpenTextAlign] = useState(false);
     const [openAlignItems, setOpenAlignItems] = useState(false);
@@ -527,8 +527,8 @@ const Editor = props => {
             transform: 'translate3d(0px,0px,0px)'},
         delay: 500,
         config: config.stiff
-    }));   
-    
+    }));
+
 
     if(redirect !== undefined) {
         return ( <Redirect to={redirect}/> );
@@ -574,7 +574,7 @@ const Editor = props => {
                     </Tabs>
                     {buttonsGroup}
                 </Paper>
-                <animated.div 
+                <animated.div
                     style={{...sentenceStyle, padding: '10px', border: '1px dashed', borderRadius: '2%', width: '90%', minHeight: '50vh', display: 'flex', transform: sentenceSpring.xys.interpolate(transSentence)}}
                     onMouseMove={({ clientX: x, clientY: y }) => setSentenceSpring({ xys: calcSentence(x, y) })}
                     onMouseLeave={() => setSentenceSpring({ xys: [0, 0, 1] })}
@@ -582,7 +582,7 @@ const Editor = props => {
                     {sentenceBody}
                 </animated.div>
             </animated.div>
-            <animated.div 
+            <animated.div
                 className={classes.finish}
                 onMouseMove={({ clientX: x, clientY: y }) => setFinishSpring({ xys: calcFinish(x, y) })}
                 onMouseLeave={() => setFinishSpring({ xys: [0, 0, 1] })}
@@ -750,7 +750,7 @@ const mapStateToProps = state => ({
 });
 
 export default connect(
-    mapStateToProps, 
+    mapStateToProps,
     { createSentence }
 )(Editor);
 
@@ -759,9 +759,9 @@ export default connect(
 
 
 
-  
 
-    
-  
+
+
+
 
 

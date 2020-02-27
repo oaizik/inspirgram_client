@@ -22,15 +22,15 @@ export default function UpdateProfileDialog(props) {
     const [password, setPassword] = useState(undefined);
     const [writer, setWriter] = useState(false);
     const [credentials, setCredentials] = useState(undefined);
-    
+
     const {open, handleUpdateClose } = props;
-    
+
     const incorectCredentials = (
         <div style={{color: 'red', margin: '0px auto',}}>
             there is a problem with your credentials, Please try again
         </div>
     );
-    
+
     const handleSubmit = async() => {
         let userType;
         if(writer) {
@@ -40,7 +40,7 @@ export default function UpdateProfileDialog(props) {
         }
         let parsed;
         try {
-            const res = await fetch('http://localhost:5000/users', {
+            const res = await fetch('https://inspirgram.herokuapp.com/users', {
             method: 'PUT',
             headers: { 'Content-Type': 'application/json', 'inspirgram_auth_token':  localStorage.getItem('inspirgram_auth_token')},
             body: JSON.stringify({ name: name, password: password, email: email, userType: userType}),
@@ -50,7 +50,7 @@ export default function UpdateProfileDialog(props) {
             console.log(e);
             setCredentials(incorectCredentials);
         }
-        if(parsed.status === 1) { 
+        if(parsed.status === 1) {
             if(writer) {
                 localStorage.setItem('userType', 'writer');
             } else {

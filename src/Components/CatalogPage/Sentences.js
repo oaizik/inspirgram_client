@@ -20,7 +20,7 @@ const Sentences = props => {
     const classes = useStyles();
     const [content, setContent] = useState(<div></div>);
 
-    useEffect(() => { 
+    useEffect(() => {
         props.fetchSentences();
         const state = store.getState();
         if(Object.keys(state.sentences.item).length !== 0) {
@@ -33,7 +33,7 @@ const Sentences = props => {
                 <div className="iconsdiv" style={{height: '45px', backgroundColor: 'white', display: 'flex', justifyContent: 'space-between'}}>
                     <Tooltip title="like" aria-label="like" >
                         <IconButton aria-label="add to shopping cart">
-                            <FavoriteBorderTwoToneIcon style={{ color: 'red' }} />{sentence.numOfOrders} 
+                            <FavoriteBorderTwoToneIcon style={{ color: 'red' }} />{sentence.numOfOrders}
                         </IconButton>
                     </Tooltip>
                     <Tooltip title="edit" aria-label="edit" >
@@ -56,16 +56,16 @@ const Sentences = props => {
     }, []);
 
     const buyClicked = async(sentenceId) => {
-        if(localStorage.getItem('userId')) { 
+        if(localStorage.getItem('userId')) {
             //  new order
             let parsedRes;
             try {
-                const response = await fetch('http://localhost:5000/orders/', {
+                const response = await fetch('https://inspirgram.herokuapp.com//orders/', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json',
                                'inspirgram_auth_token': localStorage.getItem('inspirgram_auth_token')
                             },
-                    body: JSON.stringify({ clientId: localStorage.getItem('userId'), 
+                    body: JSON.stringify({ clientId: localStorage.getItem('userId'),
                                            sentenceId: sentenceId,
                                            platform: "canvas",
                                            style: {
@@ -77,7 +77,7 @@ const Sentences = props => {
                                             fontStyle: props.sentences[sentenceId].style.fontStyle,
                                             textDecoration: props.sentences[sentenceId].style.textDecoration,
                                             textAlign: props.sentences[sentenceId].style.textAlign,
-                                            alignItems: props.sentences[sentenceId].style.alignItems } 
+                                            alignItems: props.sentences[sentenceId].style.alignItems }
                                         }),
                     })
                     parsedRes = await response.json();
@@ -85,7 +85,7 @@ const Sentences = props => {
                 console.log(e);
                 alert('an Error occured, order didnt complete!');
             }
-            if(parsedRes.status === 1) { 
+            if(parsedRes.status === 1) {
                 alert('redirect to paypal!');
             } else {
                 alert('an Error occured, order didnt complete!');
@@ -94,12 +94,12 @@ const Sentences = props => {
             //  paypal pay
             let parsed;
             try {
-                const res = await fetch('http://localhost:5000/paypal/pay', {
+                const res = await fetch('https://inspirgram.herokuapp.com/paypal/pay', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({
                                             "items":[{
-                                                "name": "item", 
+                                                "name": "item",
                                                 "sku": "001",
                                                 "price": "25.00",
                                                 "currency": "USD",
@@ -117,12 +117,12 @@ const Sentences = props => {
             } else {
                 alert('an Error occured, order didnt complete!');
             };
-            
+
         } else { //   if user is not logged in
             alert('you have to be logged in before making a purches!');
         }
     };
-            
+
     return (
         <div className={classes.sentencescontainer} >
             {content}

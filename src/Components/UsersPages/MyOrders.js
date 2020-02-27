@@ -42,36 +42,36 @@ export default function MyOrders() {
         }
         setGoodAlertOpen(false);
         setGoodAlertOpen(false);
-    }; 
+    };
 
-    const deleteClicked = async (order) => {  
+    const deleteClicked = async (order) => {
         let parsed;
         try {
-            const res = await fetch('http://localhost:5000/orders/', {
+            const res = await fetch('https://inspirgram.herokuapp.com/orders/', {
                 method: 'DELETE',
                 headers: { 'Content-Type': 'application/json',
                            'inspirgram_auth_token':  localStorage.getItem('inspirgram_auth_token')
                          },
                 body: JSON.stringify({ sentenceId: order.sentenceId, orderId: order.orderId })
-            })
+            });
             parsed = await res.json();
         } catch(e) {
             console.log(e);
             badAlertClick();
         }
-        if(parsed.status === 1) { 
+        if(parsed.status === 1) {
             goodAlertClick();
-        } else { 
+        } else {
             badAlertClick();
         }
     };
 
-    useEffect(() => { 
+    useEffect(() => {
         async function getData () {
             const state = store.getState();
             let parsed;
             try {
-                const res = await fetch('http://localhost:5000/orders/allClient', {
+                const res = await fetch('https://inspirgram.herokuapp.com/orders/allClient', {
                     method: 'GET',
                     headers: { 'Content-Type': 'application/json',
                                'inspirgram_auth_token':  localStorage.getItem('inspirgram_auth_token')
@@ -104,10 +104,10 @@ export default function MyOrders() {
             } else {
                 setContent(<div>Orders are empty</div>);
             }
-            
+
         };
         getData();
-    }, []); 
+    }, []);
 
     const [myOrdersSpring, setMyOrdersSpring] = useSpring(()=>({
         from: { opacity: 0, transform: 'translate3d(0px, -1000px, -100px)'},

@@ -21,15 +21,15 @@ const SignedupDialog = props => {
     const [password, setPassword] = useState(undefined);
     const [writer, setWriter] = useState(false);
     const [credentials, setCredentials] = useState(undefined);
-    
+
     const {open, handleClose, authUser, changeDialog } = props;
-    
+
     const incorectCredentials = (
         <div style={{color: 'red', margin: '0px auto',}}>
             Sign-up Failed, Please try again
         </div>
     );
-    
+
     const handleSignup = async() => {
         let userType;
         if(writer) {
@@ -39,12 +39,12 @@ const SignedupDialog = props => {
         }
         let parsed;
         try {
-            const res = await fetch('http://localhost:5000/users', {
+            const res = await fetch('https://inspirgram.herokuapp.com/users', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ name: name, 
+                body: JSON.stringify({ name: name,
                                        password: password,
-                                       email: email, 
+                                       email: email,
                                        userType: userType,
                                        userAuthType: "email" }),
             })
@@ -52,8 +52,8 @@ const SignedupDialog = props => {
         } catch(e) {
             console.log(e);
             setCredentials(incorectCredentials);
-        }  
-        if(parsed.status === 1) { 
+        }
+        if(parsed.status === 1) {
             const user = {
                 id: parsed.userParams.id,
                 userType: parsed.userParams.userType
