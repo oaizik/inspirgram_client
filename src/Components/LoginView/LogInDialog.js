@@ -20,7 +20,7 @@ const useStyles = makeStyles(theme => ({
 const bStyle = {
     display: 'block',
     margin: '15px auto',
-    height: '37px',
+    height: '42px',
     width: '370px',
     borderRadius: '5px',
     padding: '10px 12px',
@@ -28,6 +28,7 @@ const bStyle = {
     fontWeight: '200',
     backgroundColor: '#3b5998',
     opacity: '0.7',  
+    textTransform: 'initial',
     '&:hover': {
         opacity: '1',
     },
@@ -172,7 +173,7 @@ const LoginDialog = props => {
             />
         </DialogContent>
         <DialogActions style={{marginTop: '2vh'}}>
-            <Button type="submit" fullWidth variant="contained" color="primary" onClick={handleLogIn}>
+            <Button type="submit" fullWidth variant="contained" style={{backgroundColor: 'pink'}} onClick={handleLogIn}>
                 Log In
             </Button>
         </DialogActions>
