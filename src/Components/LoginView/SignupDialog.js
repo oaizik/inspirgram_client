@@ -129,7 +129,7 @@ const SignedupDialog = props => {
           />
         </DialogContent>
         <DialogActions style={{marginTop: '2vh'}}>
-            <Button type="submit" fullWidth variant="contained" color="primary" onClick={handleSignup}>
+            <Button type="submit" fullWidth variant="contained" style={{backgroundColor: 'pink'}} onClick={handleSignup}>
                 Sign up
             </Button>
         </DialogActions>
